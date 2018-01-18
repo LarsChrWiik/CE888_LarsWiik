@@ -5,8 +5,6 @@ import numpy as np
 from os.path import isfile, join
 
 
-
-
 #======================================================================================================
 
 def id2ss(ID,mywn):
@@ -60,7 +58,7 @@ class EmotionDetector():
         for ss in sslist:
                     #print ss
                     #print ssid, len(synset2domains)
-                    for name, emotion in emotions.items():
+                    for name, emotion in list(emotions.items()):
                         if ss in emotion: # not all synsets are in WordNet Domain.
                             #print "Detected", ss, name
                             return name
@@ -130,8 +128,4 @@ if __name__ == '__main__':
 
     raw = "Full of love and not hate."
 
-    print(ed.detect_emotion_in_raw_np(raw))
-
-
-
-
+    print((ed.detect_emotion_in_raw_np(raw)))
