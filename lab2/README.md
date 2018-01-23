@@ -2,7 +2,7 @@
 
 ## What has been done
 
-An analysis of a vehicle fleet replacement plan for a company. The data is MPG of some of their cars and the potential replacements. 
+An analysis of a vehicle fleet replacement plan for a company is presented. The data is MPG of some of their cars and the potential replacements. 
 
 The data has been analysed and different plotting have been created. The analysis includes standard deviation and bootstrapping. 
 
