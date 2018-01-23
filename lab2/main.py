@@ -20,7 +20,6 @@ def save_diagram(plotter, filename, x_label = None, y_label = None):
 
 def create_diagrams():
     # Scaterplot "current fleet" and "proposed fleet".
-    print(df.columns[0])
     sns_plot = sns.lmplot(
         df.columns[0],
         df.columns[1],
@@ -67,18 +66,18 @@ create_diagrams()
 # ***** Standard deviation comparison via the boostrap *****
 #std_current_fleet = np.std(df.values.T[0])
 #std_proposed_fleet = np.std(df.dropna().values.T[0])
-print("Standard deviation: current fleet")
+print("Standard deviation: Current fleet")
 boot = bootstrap.boostrap(np.std, 1000, df.values.T[0])
+print("upper = " + str(boot[2]))
 print("Mean = " + str(boot[0]))
 print("lower = " + str(boot[1]))
-print("upper = " + str(boot[2]))
 print("")
 
-print("Standard deviation: proposed fleet")
+print("Standard deviation: Proposed fleet")
 boot = bootstrap.boostrap(np.std, 10000, df.dropna().values.T[1])
+print("upper = " + str(boot[2]))
 print("Mean = " + str(boot[0]))
 print("lower = " + str(boot[1]))
-print("upper = " + str(boot[2]))
 print("")
 
 
