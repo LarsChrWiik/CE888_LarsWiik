@@ -25,7 +25,7 @@ Scaterplot
 
 ### Current fleet
 
-Standard deviation
+Standard deviation:
 - upper = 6.950073968587861
 - std-Mean = 6.401805462179708
 - lower = 5.808888915480925
