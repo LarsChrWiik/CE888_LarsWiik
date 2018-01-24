@@ -38,8 +38,8 @@ def create_diagrams():
     save_diagram(
         histogram_plot,
         'histogram_current_fleet',
-        '',
-        ''
+        'MPG',
+        'Number of vehicles'
     )
 
     # Histogram "proposed fleet"
@@ -52,8 +52,8 @@ def create_diagrams():
     save_diagram(
         histogram_plot,
         'histogram_proposed_fleet',
-        '',
-        ''
+        'MPG',
+        'Number of vehicles'
     )
 
 # ***** CODE *****
@@ -66,18 +66,24 @@ create_diagrams()
 # ***** Standard deviation comparison via the boostrap *****
 #std_current_fleet = np.std(df.values.T[0])
 #std_proposed_fleet = np.std(df.dropna().values.T[0])
-print("Standard deviation: Current fleet")
-boot = bootstrap.boostrap(np.std, 1000, df.values.T[0])
-print("upper = " + str(boot[2]))
-print("Mean = " + str(boot[0]))
-print("lower = " + str(boot[1]))
+print("***** Current fleet *****")
+print("Standard deviation")
+boot = bootstrap.boostrap(np.std, 10000, df.values.T[0])
+print("- upper = " + str(boot[2]))
+print("- std-Mean = " + str(boot[0]))
+print("- lower = " + str(boot[1]))
+print("Mean:")
+print("- mean = " + str(np.mean(df.values.T[0])))
 print("")
 
-print("Standard deviation: Proposed fleet")
+print("***** Proposed fleet *****")
+print("Standard deviation:")
 boot = bootstrap.boostrap(np.std, 10000, df.dropna().values.T[1])
-print("upper = " + str(boot[2]))
-print("Mean = " + str(boot[0]))
-print("lower = " + str(boot[1]))
+print("- upper = " + str(boot[2]))
+print("- std-Mean = " + str(boot[0]))
+print("- lower = " + str(boot[1]))
+print("Mean:")
+print("- mean = " + str(np.mean(df.dropna().values.T[1])))
 print("")
 
 
