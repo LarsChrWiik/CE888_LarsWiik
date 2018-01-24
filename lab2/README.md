@@ -27,7 +27,7 @@ Scaterplot
 
 Standard deviation:
 - upper = 6.950073968587861
-- std-Mean = 6.401805462179708
+- std-mean = 6.401805462179708
 - lower = 5.808888915480925
 
 Mean:
@@ -37,7 +37,7 @@ Mean:
 
 Standard deviation:
 - upper = 6.897914239562367
-- std-Mean = 6.068930545150857
+- std-mean = 6.068930545150857
 - lower = 5.139403406065087
 
 Mean:
