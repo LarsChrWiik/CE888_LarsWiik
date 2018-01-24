@@ -21,18 +21,22 @@ Scaterplot
 
 ![logo](./Diagrams/scaterplot.png?raw=true)
 
-## Standard deviation via the boostrap
+***** Current fleet *****
+Standard deviation
+- upper = 6.950073968587861
+- std-Mean = 6.401805462179708
+- lower = 5.808888915480925
+Mean:
+- mean = 20.14457831325301
 
-Standard deviation: Current fleet
-* upper = 6.938354490243352
-* Mean = 6.401805462179708
-* lower = 5.8013017669397655
+***** Proposed fleet *****
+Standard deviation:
+- upper = 6.897914239562367
+- std-Mean = 6.068930545150857
+- lower = 5.139403406065087
+Mean:
+- mean = 30.481012658227847
 
-
-Standard deviation: Proposed fleet
-* upper = 6.885967164170807
-* Mean = 6.068930545150857
-* lower = 5.1587209518132005
 
 
 
