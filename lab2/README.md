@@ -24,18 +24,22 @@ Scaterplot
 ## Standard deviation comparison via the boostrap
 
 ### Current fleet
+
 Standard deviation
 - upper = 6.950073968587861
 - std-Mean = 6.401805462179708
 - lower = 5.808888915480925
+
 Mean:
 - mean = 20.14457831325301
 
 ### Proposed fleet
+
 Standard deviation:
 - upper = 6.897914239562367
 - std-Mean = 6.068930545150857
 - lower = 5.139403406065087
+
 Mean:
 - mean = 30.481012658227847
 
