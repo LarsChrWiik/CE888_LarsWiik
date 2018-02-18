@@ -6,10 +6,10 @@ This repository contains labs and assignent included in the module CE888 - Data 
 
 The dataset is not included in this repository due to its size.
 To be able to run the program:
-* Download the dataset from: https://github.com/brendenlake/omniglot
-- Do not include images_background_small1 or images_background_small2
-* Move the dataset to the One-Shot_Learning folder.
-* Run main.py
+- Download the dataset from: https://github.com/brendenlake/omniglot
+    - Do not include images_background_small1 or images_background_small2
+- Move the dataset to the One-Shot_Learning folder.
+- Run main.py
 
 ### About the dataset.
 images_background contains 30 alphabets, which is used for training.
