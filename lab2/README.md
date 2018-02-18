@@ -44,5 +44,4 @@ Mean:
 - mean = 30.481012658227847
 
 
-
-
+By Lars Wiik.

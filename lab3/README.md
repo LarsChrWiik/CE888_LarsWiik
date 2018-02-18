@@ -1,3 +1,3 @@
-Lab3
+# Lab3
 
-by Lars
+By Lars Wiik
