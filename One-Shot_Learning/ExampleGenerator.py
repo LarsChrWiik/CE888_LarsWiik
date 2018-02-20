@@ -4,6 +4,11 @@ import os
 import numpy as np
 import random
 
+def bool_to_distance(b):
+    if b:
+        return 0
+    return 1
+
 # Return random subfolder of given path.
 def rnd_subfolder(path):
     x = os.listdir(path)
@@ -55,7 +60,7 @@ def load_examples(path, count, verbose = False, include_meta_data = False):
         new_example = [
             np.array(Image.open(path + "/" + alphabet + "/" + letter + "/" + version).getdata()),
             np.array(Image.open(path + "/" + alphabet + "/" + letter2 + "/" + version2).getdata()),
-            similar_letter
+            bool_to_distance(similar_letter)
         ]
         if include_meta_data:
             new_example.append(path + "/" + alphabet + "/" + letter + "/" + version)
