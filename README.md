@@ -1,37 +1,25 @@
-# Lab6
+# Lars Wiik (CE888 - University of Essex - Spring - 2018)
 
-## Setting up 
-* Do the following from the unix prompt of your VM
-	* Go to the directory you "cloned" the module files last time
-	* Do `git pull origin master' to bring the new files
+This repository contains labs and assignment included in the module CE888 - Data Science and Decision Making.
 
-* Do the following tasks using your windows share or your unix account in the VM	
-	* Copy the lab files from the module directory into your own github lab directory, in "lab6" folder
-	* Remove everything from the copied README.md
+## Assignment (Genetic Programming/Auto-ML for One-Shot Learning)
 
-## ipython/jupiter
+The dataset is not included in this repository due to its size.
+To be able to run the program:
+- Download the dataset (In the Python folder) from: https://github.com/brendenlake/omniglot
+    - images_background.zip
+    - images_evaluation.zip
+    - Do NOT include images_background_small1 or images_background_small2
+- Extract the zip files and move them to the One-Shot_Learning folder.
+- Run main.py
 
-* Start ipython/jupiter by typing `ipython notebook --ip='*'`
-* Start a browser and connect to `http://mlvm:8888/`
-	* You will need to input the token that was provided to you when you started ipython (looks like "c3fad33a4d227d5f395f6b2ce5de34c05b2dfa0ca516b36f" (NOT THIS ONE))
-* Using the web page, go to lab6
+### About the dataset.
+images_background contains 30 alphabets, which is used for training.
+images_evaluation contains 20 alphabets, which is used for evaluation.
+images_background_small1 and images_background_small2 are subsets of the original dataset and is not needed.
 
-## Ipython notebooks
+## Labs
 
-* Inside `lab6` you will see de.ipynb
+Link to the labs: http://orb.essex.ac.uk/ce/ce888/
 
-* Create a new Ipython notebook by copying de.ipynb
 
-## Lab Exercises 
-
-- [ ] Use a seaborn pairplot ``sns.pairplot()'' to visualise your data
-- [ ] Loop over different cluster size starting from 2 until 10, using all the features present and pick the one with the lowest silhouette score
-- [ ] (Optional) Save 10 runs for each cluster size and use a seaborn pointplot [http://seaborn.pydata.org/generated/seaborn.pointplot.html](http://seaborn.pydata.org/generated/seaborn.pointplot.html) without joining the lines 
-to plot the confidence intervals for the silhouette score
-- [ ] Change your clusterer to ``AgglomerativeClustering'' see here for more [http://scikit-learn.org/stable/modules/generated/sklearn.cluster.AgglomerativeClustering.html](http://scikit-learn.org/stable/modules/generated/sklearn.cluster.AgglomerativeClustering.html) and re-do the above experiment - what do you observe?
-
-- [ ] Once you are done, save your changes in github
-	* Go inside your lab directory and do 
-      * ``git add -A -v``
-      * ``git commit -m <message>``
-      * ``git push origin master``
