@@ -15,7 +15,7 @@ def show_task_1_info(path):
     print("")
     for i in range(len(examples)):
         # Printing information about the first example.
-        print("Info about the first example")
+        print("*** Info about example " + str(i) + " ***")
         print("image 1")
         print("   - path  = " + str(examples[i][3]))
         print("   - image = " + str(examples[i][0]))
