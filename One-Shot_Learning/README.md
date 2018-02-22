@@ -5,8 +5,8 @@
 The dataset is not included in this repository due to its size.
 To be able to run the program:
 - Download the dataset (In the Python folder) from: https://github.com/brendenlake/omniglot
-- images_background.zip
-- images_evaluation.zip
+    - images_background.zip
+    - images_evaluation.zip
 - Do NOT include images_background_small1 or images_background_small2
 - Extract the zip files and move them to the One-Shot_Learning folder.
 - Run main.py
