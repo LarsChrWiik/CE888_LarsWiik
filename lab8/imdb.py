@@ -7,6 +7,10 @@ from keras.preprocessing import sequence
 from keras.models import Model
 from keras.layers import Dense, Activation, Embedding, Flatten, Input
 from keras.datasets import imdb
+from keras.layers import Dropout
+from keras.layers import Conv1D
+from keras.layers import GlobalMaxPool1D
+from keras.layers import LSTM
 
 max_features = 20000
 maxlen = 80  # cut texts after this number of words (among top max_features most common words)
@@ -31,7 +35,15 @@ print('Build model...')
 inputs = Input(shape=(maxlen,))
 x = inputs
 x = Embedding(max_features, 128, dropout=0.2)(x)
-x = Flatten()(x)
+#x = Dense(64, activation="relu")(x)
+#x = Dropout(0.5)(x)
+#x = Dense(64, activation="relu")(x)
+#x = Conv1D(filters=64, kernel_size=3, strides=1, activation="relu")(x)
+x = LSTM(64)(x)
+
+#x = GlobalMaxPool1D()(x)
+
+#x = Flatten()(x)
 x = Dense(1)(x)
 predictions = Activation("sigmoid")(x)
 
