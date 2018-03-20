@@ -1,4 +1,4 @@
-# ce888labs
+# Lab7
 
 ![logo](./Diagrams/1.jpg?raw=true)
 
