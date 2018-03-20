@@ -20,4 +20,4 @@
 - LSTM:
     * Test score: 1.0574279691016675
     * Test accuracy: 0.80988
-    * Tim eused: 21 min 38 sec
+    * Time used: 21 min 38 sec
