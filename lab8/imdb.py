@@ -37,7 +37,6 @@ x = inputs
 x = Embedding(max_features, 128, dropout=0.2)(x)
 #x = Dense(64, activation="relu")(x)
 #x = Dropout(0.5)(x)
-#x = Dense(64, activation="relu")(x)
 #x = Conv1D(filters=64, kernel_size=3, strides=1, activation="relu")(x)
 x = LSTM(64)(x)
 
