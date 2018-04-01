@@ -7,17 +7,12 @@ from Sampler import Sampler
 
 """
 This function is used to optimize algorithms and parameters using TPOT. 
-
-Current best:
-    # Score on the training set was:-0.24953600000000004
-    exported_pipeline = make_pipeline(
-        StackingEstimator(estimator=GradientBoostingRegressor(loss="ls", max_depth=3, n_estimators=100)),
-        RandomForestRegressor(max_features="log2", n_estimators=25, n_jobs=-1)
-    )
 """
-def tpot_optimization(count, train_path, test_path):
+def tpot_optimization(count, train_path, test_path, verbose=False):
     # Generate samples.
+    if verbose: print("Get train samples. ")
     X_train, Y_train = Sampler.get_samples(path=train_path, count=count)
+    if verbose: print("Get test samples. ")
     X_test, Y_test = Sampler.get_samples(path=test_path, count=count)
 
     # Custom TPOT optimization algorithms and parameters.
@@ -28,17 +23,6 @@ def tpot_optimization(count, train_path, test_path):
             'max_depth': [2, 3, 4],
             'n_jobs': [-1]
         },
-        'sklearn.ensemble.ExtraTreesRegressor': {
-            'n_estimators': [10, 25, 100, 300, 1000],
-            'max_features': ["auto", "sqrt", "log2"],
-            'max_depth': [2, 3, 4],
-            'n_jobs': [-1]
-        },
-        'sklearn.ensemble.GradientBoostingRegressor': {
-            'n_estimators': [10, 25, 100, 300, 1000],
-            'loss': ["ls", "lad", "huber", "quantile"],
-            'max_depth': [2, 3, 4]
-        },
         'xgboost.XGBRegressor': {
             'n_estimators': [10, 25, 100, 300, 1000],
             'booster': ["gbtree", "gblinear", "dart"],
@@ -48,10 +32,19 @@ def tpot_optimization(count, train_path, test_path):
             'objective': ["reg:linear", "multi:softmax", "multi:softprob"]
         }
     }
+    """
+    'sklearn.ensemble.ExtraTreesRegressor': {
+        'n_estimators': [10, 25, 100, 300, 1000],
+        'max_features': ["auto", "sqrt", "log2"],
+        'max_depth': [2, 3, 4],
+        'n_jobs': [-1]
+    },
+    """
 
+    if verbose: print("Start TPOT optimization. ")
     tpot = TPOTRegressor(
-        generations=10,
-        population_size=30,
+        #generations=10,
+        #population_size=30,
         verbosity=2,
         scoring="neg_mean_squared_error",
         config_dict=tpot_config  # {'sklearn.ensemble.RandomForestRegressor': {}}
