@@ -27,7 +27,8 @@ def start_tpot_optimazation(count):
     tpot_optimization(
         count=count,
         train_path=Dataset.data_background,
-        test_path=Dataset.data_evaluation
+        test_path=Dataset.data_evaluation,
+        verbose=True
     )
 
 
@@ -57,16 +58,27 @@ def start_cross_validation(count):
 
 
 """
+Generate pickle models. 
+"""
+def pickle_models():
+    ModelHandler.train_save_new_model(count=10000, verbose=True)
+    ModelHandler.train_save_new_model(count=20000, verbose=True)
+    ModelHandler.train_save_new_model(count=30000, verbose=True)
+    ModelHandler.train_save_new_model(count=40000, verbose=True)
+    ModelHandler.train_save_new_model(count=50000, verbose=True)
+
+
+"""
 Main. 
 """
 def main():
-
-    ModelHandler.train_save_new_model(count=1000, verbose=True)
-    clf = ModelHandler.load_model(count=1000, verbose=True)
+    #pickle_models()
+    #ModelHandler.train_save_new_model(count=1000, verbose=True)
+    #clf = ModelHandler.load_model(count=1000, verbose=True)
+    #start_20_way_one_shot(clf=clf)
 
     #start_cross_validation(count=10000)
-    start_20_way_one_shot(clf=PredictionModel())
-    #start_tpot_optimazation(count=30000)
+    start_tpot_optimazation(count=1000)
 
 
 """
