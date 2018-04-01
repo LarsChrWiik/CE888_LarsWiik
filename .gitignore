@@ -3,7 +3,8 @@
 # Added by Lars
 .DS_Store
 omniglot_baseline/
-.idea
+.idea/
+
 
 
 __pycache__/
