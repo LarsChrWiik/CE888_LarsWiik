@@ -9,7 +9,7 @@ import pickle
 Get the path for a model.
 """
 def get_model_string(count):
-    return "./models/trained_model" + str(count) + ".sav"
+    return "./models/trained_model" + str(count) + ".pkl"
 
 
 def train_model(clf, count, verbose=False):
