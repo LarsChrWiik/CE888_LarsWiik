@@ -36,8 +36,8 @@
       <file leaf-file-name="TpotOptimization.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/TpotOptimization.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="287">
-              <caret line="51" column="16" lean-forward="false" selection-start-line="51" selection-start-column="11" selection-end-line="51" selection-end-column="24" />
+            <state relative-caret-position="310">
+              <caret line="52" column="23" lean-forward="false" selection-start-line="52" selection-start-column="23" selection-end-line="52" selection-end-column="23" />
               <folding />
             </state>
           </provider>
@@ -126,12 +126,12 @@
         <option value="$PROJECT_DIR$/NWayOneShotLearning.py" />
         <option value="$PROJECT_DIR$/Dataset.py" />
         <option value="$PROJECT_DIR$/ModelTrainer.py" />
-        <option value="$PROJECT_DIR$/TpotOptimization.py" />
         <option value="$PROJECT_DIR$/ModelHandler.py" />
         <option value="$PROJECT_DIR$/KFold_CV.py" />
         <option value="$PROJECT_DIR$/PredictionModel.py" />
         <option value="$PROJECT_DIR$/Sampler.py" />
         <option value="$PROJECT_DIR$/main.py" />
+        <option value="$PROJECT_DIR$/TpotOptimization.py" />
       </list>
     </option>
   </component>
@@ -661,8 +661,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/TpotOptimization.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="287">
-          <caret line="51" column="16" lean-forward="false" selection-start-line="51" selection-start-column="11" selection-end-line="51" selection-end-column="24" />
+        <state relative-caret-position="310">
+          <caret line="52" column="23" lean-forward="false" selection-start-line="52" selection-start-column="23" selection-end-line="52" selection-end-column="23" />
           <folding />
         </state>
       </provider>
