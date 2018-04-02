@@ -23,6 +23,17 @@ def tpot_optimization(count, train_path, test_path, verbose=False):
             'max_depth': [2, 3, 4],
             'n_jobs': [-1]
         },
+        'sklearn.ensemble.ExtraTreesRegressor': {
+            'n_estimators': [10, 25, 100, 300, 1000],
+            'max_features': ["auto", "sqrt", "log2"],
+            'max_depth': [2, 3, 4],
+            'n_jobs': [-1]
+        },
+        'sklearn.ensemble.GradientBoostingRegressor': {
+            'n_estimators': [10, 25, 100, 300, 1000],
+            'loss': ["ls", "lad", "huber", "quantile"],
+            'max_depth': [2, 3, 4]
+        },
         'xgboost.XGBRegressor': {
             'n_estimators': [10, 25, 100, 300, 1000],
             'booster': ["gbtree", "gblinear", "dart"],
@@ -32,19 +43,11 @@ def tpot_optimization(count, train_path, test_path, verbose=False):
             'objective': ["reg:linear", "multi:softmax", "multi:softprob"]
         }
     }
-    """
-    'sklearn.ensemble.ExtraTreesRegressor': {
-        'n_estimators': [10, 25, 100, 300, 1000],
-        'max_features': ["auto", "sqrt", "log2"],
-        'max_depth': [2, 3, 4],
-        'n_jobs': [-1]
-    },
-    """
 
     if verbose: print("Start TPOT optimization. ")
     tpot = TPOTRegressor(
-        #generations=10,
-        #population_size=30,
+        generations=10,
+        population_size=30,
         verbosity=2,
         scoring="neg_mean_squared_error",
         config_dict=tpot_config  # {'sklearn.ensemble.RandomForestRegressor': {}}
