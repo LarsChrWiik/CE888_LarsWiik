@@ -1,5 +1,7 @@
 
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.ensemble import ExtraTreesRegressor
 from xgboost import XGBRegressor
@@ -8,8 +10,23 @@ from sklearn.pipeline import make_pipeline
 from tpot.builtins import StackingEstimator
 import random
 
+
+"""
+Custom distance function for KNN. 
+"""
+def custom_distance(x, y):
+    a = PredictionModel.clf.predict([x])
+    b = PredictionModel.clf.predict([y])
+    return abs(a - b)
+
+
+"""
+Class containing the logic for the predictive model. 
+"""
 class PredictionModel:
 
+    #clf = XGBRegressor(n_jobs=-1)
+    #clf2 = KNeighborsClassifier(n_neighbors=1, metric=custom_distance)
 
     # Pipeline3
     # Score on the training set was:-0.2311721732
@@ -33,7 +50,17 @@ class PredictionModel:
     Train the classifier. 
     """
     def fit(self, X, Y):
-        return self.clf.fit(X, Y)
+        self.clf.fit(X, Y)
+
+    """
+    Train the classifier. 
+    """
+    """
+    def fit(self, X, Y):
+        self.clf.fit(X[:int(len(X) / 2)], Y[:int(len(X) / 2)])
+        self.clf2.fit(X[-int(len(X) / 2):], Y[-int(len(X) / 2):])
+    """
+
 
 
     """
