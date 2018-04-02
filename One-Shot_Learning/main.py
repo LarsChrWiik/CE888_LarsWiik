@@ -75,10 +75,12 @@ def main():
     #pickle_models()
     #ModelHandler.train_save_new_model(count=1000, verbose=True)
     #clf = ModelHandler.load_model(count=1000, verbose=True)
-    #start_20_way_one_shot(clf=clf)
+
+    clf = ModelHandler.train_model(clf=PredictionModel(), count=10000, verbose=True)
+    start_20_way_one_shot(clf=clf)
 
     #start_cross_validation(count=10000)
-    start_tpot_optimazation(count=1000)
+    #start_tpot_optimazation(count=10000)
 
 
 """
@@ -114,4 +116,12 @@ GradientBoostingRegressor (count=10 000)    20-way one-shot learning score = 12.
 XGBRegressor (count=1 000)                  20-way one-shot learning score = 10.0 
 XGBRegressor (count=10 000)                 20-way one-shot learning score = 18.0 
 XGBRegressor (count=30 000)                 20-way one-shot learning score = 12.0 
+
+
+
+
+with knn:   10000 RandomForestRegressor n=1   = 12
+with knn:   10000 RandomForestRegressor n=1  compressed  = 8
+
+with knn:   10 000 XGBoost n=1 raw_image = 10
 """
