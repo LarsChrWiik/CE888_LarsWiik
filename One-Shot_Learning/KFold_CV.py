@@ -47,9 +47,12 @@ def custom_kfold_cross_validation(clf, train_path, test_path, count=100, k_fold=
     cv_scores = []
     for i in range(k_fold):
         # Generate samples.
+        if verbose: print("Generate training samples")
         X_train, Y_train = Sampler.get_samples(path=train_path, count=count)
+        if verbose: print("Generate testing samples")
         X_test, Y_test = Sampler.get_samples(path=test_path, count=count)
 
+        if verbose: print("Fit")
         score = __cv_fit_predict(clf=clf, X_train=X_train, Y_train=Y_train, X_test=X_test, Y_test=Y_test)
         if verbose: print("(" + str(i) + ") - cv: " + str(score))
         cv_scores.append(score)
