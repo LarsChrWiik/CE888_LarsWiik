@@ -10,6 +10,7 @@ import random
 
 class PredictionModel:
 
+
     # Pipeline3
     # Score on the training set was:-0.2311721732
     clf = make_pipeline(
