@@ -8,9 +8,11 @@ import numpy as np
 """
 Last stage of cross validation. (Fit and Predict). 
 """
-def __cv_fit_predict(clf, X_train, Y_train, X_test, Y_test):
+def __cv_fit_predict(clf, X_train, Y_train, X_test, Y_test, verbose=False):
     # Fit and predict.
+    if verbose: print("Fit")
     clf.fit(X_train, Y_train)
+    if verbose: print("Predict")
     predictions = clf.predict(X_test)
     predictions = np.around(predictions)
 
@@ -52,8 +54,12 @@ def custom_kfold_cross_validation(clf, train_path, test_path, count=100, k_fold=
         if verbose: print("Generate testing samples")
         X_test, Y_test = Sampler.get_samples(path=test_path, count=count)
 
-        if verbose: print("Fit")
-        score = __cv_fit_predict(clf=clf, X_train=X_train, Y_train=Y_train, X_test=X_test, Y_test=Y_test)
+        score = __cv_fit_predict(
+            clf=clf,
+            X_train=X_train, Y_train=Y_train,
+            X_test=X_test, Y_test=Y_test,
+            verbose=verbose
+        )
         if verbose: print("(" + str(i) + ") - cv: " + str(score))
         cv_scores.append(score)
 
