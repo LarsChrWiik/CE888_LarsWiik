@@ -69,11 +69,12 @@ class Sampler:
     """
     @staticmethod
     def load_image(path, alphabet, character, version):
-        image = Sampler.load_image_raw(
+        image = Sampler.load_image_compressed(
             path=path,
             alphabet=alphabet,
             character=character,
-            version=version
+            version=version,
+            size=26
         )
 
         # Transform the image into input features between 0 and 1.
@@ -159,8 +160,11 @@ class Sampler:
                 same_character=same_character
             )
             X = image1 + image2
+            X2 = image2 + image1
             sample = [X, Y]
+            sample2 = [X2, Y]
             samples.append(sample)
+            samples.append(sample2)
             same_character = False if same_character else True
             counter += 1
 
