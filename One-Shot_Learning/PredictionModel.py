@@ -5,10 +5,12 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.ensemble import ExtraTreesRegressor
 from xgboost import XGBRegressor
+from xgboost import XGBClassifier
 
 from sklearn.pipeline import make_pipeline
 from tpot.builtins import StackingEstimator
 import random
+import numpy as np
 
 
 """
@@ -50,17 +52,14 @@ class PredictionModel:
     Train the classifier. 
     """
     def fit(self, X, Y):
-        self.clf.fit(X, Y)
+        self.clf.fit(np.array(X), np.array(Y))
 
     """
     Train the classifier. 
     """
-    """
-    def fit(self, X, Y):
+    def fit_with_knn(self, X, Y):
         self.clf.fit(X[:int(len(X) / 2)], Y[:int(len(X) / 2)])
         self.clf2.fit(X[-int(len(X) / 2):], Y[-int(len(X) / 2):])
-    """
-
 
 
     """
@@ -159,5 +158,29 @@ class PredictionModel:
             n_estimators=25,
             n_jobs=-1
         )
+    )
+    """
+
+    """
+        # -0.242136
+        #Pipeline5
+        clf = make_pipeline(
+            StackingEstimator(
+                estimator=ExtraTreesRegressor(
+                    max_depth=4, max_features="log2", n_estimators=300, n_jobs=-1
+                )
+            ),
+            GradientBoostingRegressor(loss="ls", max_depth=3, n_estimators=10)
+        )
+        """
+
+    """
+    # CV: 0.61203333
+    #Pipeline4 (classification)
+    clf = make_pipeline(
+        StackingEstimator(
+            estimator=XGBClassifier(booster="dart", learning_rate=0.2, max_depth=5, n_estimators=100, n_jobs=-1,
+                                    objective="reg:linear")),
+        RandomForestClassifier(criterion="entropy", max_depth=2, max_features="auto", n_estimators=50, n_jobs=-1)
     )
     """
