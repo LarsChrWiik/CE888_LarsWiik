@@ -1,5 +1,6 @@
 
-from TpotOptimization import tpot_optimization
+from TpotOptimization import tpot_optimization_reg
+from TpotOptimization import tpot_optimization_clf
 from NWayOneShotLearning import n_way_one_shot_learning
 from TestSampler import testSampler
 from PredictionModel import PredictionModel
@@ -7,6 +8,9 @@ from Sampler import Sampler
 import ModelHandler
 import KFold_CV
 import Dataset
+
+import warnings
+warnings.filterwarnings("ignore")
 
 
 #TODO: check/fix
@@ -24,7 +28,7 @@ Starts TPOT optimization.
 """
 def start_tpot_optimazation(count):
     print("Start TPOT optimization with count =", count)
-    tpot_optimization(
+    tpot_optimization_reg(
         count=count,
         train_path=Dataset.data_background,
         test_path=Dataset.data_evaluation,
@@ -72,15 +76,17 @@ def pickle_models():
 Main. 
 """
 def main():
+    #start_tpot_optimazation(count=30000)
+
     #pickle_models()
     #ModelHandler.train_save_new_model(count=1000, verbose=True)
     #clf = ModelHandler.load_model(count=1000, verbose=True)
 
-    clf = ModelHandler.train_model(clf=PredictionModel(), count=10000, verbose=True)
+    clf = ModelHandler.train_model(clf=PredictionModel(), count=50000, verbose=True)
     start_20_way_one_shot(clf=clf)
 
     #start_cross_validation(count=10000)
-    #start_tpot_optimazation(count=10000)
+
 
 
 """
@@ -104,7 +110,15 @@ pipeline2 (count=10 000):                   20-way one-shot learning score = 13.
 pipeline2 (count=30 000):                   20-way one-shot learning score = 17.0  
 
 pipeline3 (count=10 000):                   20-way one-shot learning score = 23.0 
+pipeline3 (count=10 000) compressed:        20-way one-shot learning score = 18.0 
+pipeline3 (count=10 000) compressed:        CV accuracy score = 0.62275 
 pipeline3 (count=30 000):                   20-way one-shot learning score = 25.0 
+pipeline3 (count=50 000) compressed:        20-way one-shot learning score = 25.0 
+
+pipeline4 (count=10 000):                   20-way one-shot learning score = 14.0
+
+pipeline5 (count=50 000) compressed:        20-way one-shot learning score = 14.0
+ 
 
 RandomForestRegressor (count=10 000):       20-way one-shot learning score = 6.0 
 RandomForestRegressor (count=1 000):        20-way one-shot learning score = 7.0 
@@ -124,4 +138,11 @@ with knn:   10000 RandomForestRegressor n=1   = 12
 with knn:   10000 RandomForestRegressor n=1  compressed  = 8
 
 with knn:   10 000 XGBoost n=1 raw_image = 10
+
+
+
+
+
 """
+
+
