@@ -9,27 +9,17 @@ from xgboost import XGBClassifier
 
 from sklearn.pipeline import make_pipeline
 from tpot.builtins import StackingEstimator
-import random
 import numpy as np
 
 
-"""
-Custom distance function for KNN. 
-"""
-def custom_distance(x, y):
-    a = PredictionModel.clf.predict([x])
-    b = PredictionModel.clf.predict([y])
-    return abs(a - b)
-
-
-"""
-Class containing the logic for the predictive model. 
-"""
 class PredictionModel:
+    """
+    Class containing the logic for the predictive model.
+    """
 
-    #clf = XGBRegressor(n_jobs=-1)
-    #clf2 = KNeighborsClassifier(n_neighbors=1, metric=custom_distance)
+    clf = XGBRegressor(n_jobs=-1)
 
+    """
     # Pipeline3
     # Score on the training set was:-0.2311721732
     clf = make_pipeline(
@@ -46,141 +36,71 @@ class PredictionModel:
             n_jobs=-1
         )
     )
+    """
 
 
-    """
-    Train the classifier. 
-    """
+
     def fit(self, X, Y):
+        """
+        Train the classifier.
+
+        :param X: list of inputs.
+        :param Y: list of targets.
+        """
         self.clf.fit(np.array(X), np.array(Y))
 
-    """
-    Train the classifier. 
-    """
-    def fit_with_knn(self, X, Y):
-        self.clf.fit(X[:int(len(X) / 2)], Y[:int(len(X) / 2)])
-        self.clf2.fit(X[-int(len(X) / 2):], Y[-int(len(X) / 2):])
 
-
-    """
-    Make Prediction using the classifier. 
-    """
     def predict(self, X):
+        """
+        Make Prediction using the classifier.
+
+        :param X: list of inputs.
+        :return: float between 0 and 1 representing the regression score.
+        """
         return self.clf.predict(X)
 
-
-    """
-    Predict single class. 
-    """
-    # TODO: clean up.
-    def predict_single_class(self, main, inputs):
-
-        # Predict using mirror input features.
-        predictions = []
-        for element in inputs:
-            feature1 = main + element
-            pred1 = self.predict([feature1])[0]
-            feature2 = element + main
-            pred2 = self.predict([feature2])[0]
-            final_pred = (pred1 + pred2) / 2.0
-            predictions.append(final_pred)
-
-        # Find the most similar.
-        min_indexes = []
-        min_value = float("inf")
-        for i, v in enumerate(predictions):
-            if v < min_value:
-                min_indexes = [i]
-                min_value = v
-            elif v == min_value:
-                min_indexes.append(i)
-
-        if len(min_indexes) > 1:
-            rnd_index = random.choice(min_indexes)
-            min_indexes = [rnd_index]
-
-        predictions = [1 for _ in range(len(predictions))]
-        predictions[min_indexes[0]] = 0
-
-        return predictions
-
-
-    """
-    Return the prediction model. 
-    """
     def get_model(self):
+        """
+        Return the prediction model.
+
+        :return: classifier.
+        """
         return self.clf
 
 
-    """
-    Update the prediction model. 
-    """
+
     def set_model(self, clf):
+        """
+        Update the prediction model.
+
+        :param clf: new classifier.
+        """
         self.clf = clf
 
 
 
 
 
-# TODO: Remove.
-    """
-    # pipeline2
-    # Score on the training set was:-0.2424072
-    clf = make_pipeline(
-        StackingEstimator(
-            estimator=RandomForestRegressor(
-                max_features="log2",
-                n_estimators=10,
-                n_jobs=-1
-            )
-        ),
-        RandomForestRegressor(
-            max_features="sqrt",
-            n_estimators=100,
-            n_jobs=-1
-        )
-    )
-    """
 
-    """
-    # pipeline1
-    # -0.2541114
-    clf = make_pipeline(
-        StackingEstimator(
-            estimator=GradientBoostingRegressor(
-                loss="ls",
-                max_depth=3,
-                n_estimators=100
-            )
-        ),
-        RandomForestRegressor(
-            max_features="log2",
-            n_estimators=25,
-            n_jobs=-1
-        )
-    )
-    """
 
-    """
-        # -0.242136
-        #Pipeline5
-        clf = make_pipeline(
-            StackingEstimator(
-                estimator=ExtraTreesRegressor(
-                    max_depth=4, max_features="log2", n_estimators=300, n_jobs=-1
-                )
-            ),
-            GradientBoostingRegressor(loss="ls", max_depth=3, n_estimators=10)
-        )
-        """
 
-    """
-    # CV: 0.61203333
-    #Pipeline4 (classification)
-    clf = make_pipeline(
-        StackingEstimator(
-            estimator=XGBClassifier(booster="dart", learning_rate=0.2, max_depth=5, n_estimators=100, n_jobs=-1,
-                                    objective="reg:linear")),
-        RandomForestClassifier(criterion="entropy", max_depth=2, max_features="auto", n_estimators=50, n_jobs=-1)
-    )
-    """
+"""
+def custom_distance(x1, x2):
+    a = PredictionModel.clf.predict([x1])
+    b = PredictionModel.clf.predict([x2])
+    return abs(a - b)
+
+
+#clf2 = KNeighborsClassifier(n_neighbors=3, metric=custom_distance)
+
+
+# Train the classifier (with KNN). 
+def fit(self, X, Y):
+    self.clf.fit(X[:int(len(X) / 2)], Y[:int(len(X) / 2)])
+    self.clf2.fit(X[-int(len(X) / 2):], Y[-int(len(X) / 2):])
+
+    
+# Make Prediction using the classifier (with KNN). 
+def predict(self, X):
+    return self.clf2.predict(X)
+"""

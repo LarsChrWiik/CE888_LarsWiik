@@ -3,7 +3,7 @@ from tpot import TPOTRegressor
 from tpot import TPOTClassifier
 import numpy as np
 
-from Sampler import Sampler
+import Sampler
 
 
 """
@@ -13,9 +13,9 @@ def tpot_optimization_reg(count, train_path, test_path, verbose=False):
 
     # Generate samples.
     if verbose: print("Get train samples. ")
-    X_train, Y_train = Sampler.get_samples(path=train_path, count=count)
+    X_train, Y_train = Sampler.generate_samples(dataset=train_path, count=count)
     if verbose: print("Get test samples. ")
-    X_test, Y_test = Sampler.get_samples(path=test_path, count=count)
+    X_test, Y_test = Sampler.generate_samples(dataset=test_path, count=count)
 
     tpot_config = {
         'sklearn.ensemble.RandomForestRegressor': {
@@ -64,9 +64,9 @@ Optimize algorithms and parameters using TPOT for Classification trees.
 def tpot_optimization_clf(count, train_path, test_path, verbose=False):
     # Generate samples.
     if verbose: print("Get train samples. ")
-    X_train, Y_train = Sampler.get_samples(path=train_path, count=count)
+    X_train, Y_train = Sampler.generate_samples(dataset=train_path, count=count)
     if verbose: print("Get test samples. ")
-    X_test, Y_test = Sampler.get_samples(path=test_path, count=count)
+    X_test, Y_test = Sampler.generate_samples(dataset=test_path, count=count)
 
 
     tpot_config = {
