@@ -22,7 +22,7 @@ def train_model(clf, count, verbose=False):
     :return: the trained classifier object.
     """
     if verbose: print("Generate training samples")
-    X_train, Y_train = Sampler.get_samples(dataset=Dataset.data_background, count=count)
+    X_train, Y_train = Sampler.generate_samples(dataset=Dataset.data_background, count=count)
     if verbose: print("Fit")
     clf.fit(X_train, Y_train)
     return clf
