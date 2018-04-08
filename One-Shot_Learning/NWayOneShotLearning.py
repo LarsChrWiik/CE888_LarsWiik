@@ -4,32 +4,17 @@ from PredictionModel import PredictionModel
 import Sampler
 import random
 
-# TODO: move to NWayOneShotLearning.
-def predict_most_similar_image(clf, image_main, X):
+
+def get_index_of_min_value(a_list):
     """
-    Predict single class.
+    Calculate the index in a given array that contain the lowest value.
 
-    :param main:
-    :param inputs:
-    :return:
+    :param a_list: list of values.
+    :return: int representing the index that contain the lowest value.
     """
-    # Predict using mirror input features.
-    predictions = []
-    for image in X:
-        aaa = Sampler.object_cropping_sample()
-
-
-        feature1 = image_main + image
-        pred1 = clf.predict([feature1])[0]
-        feature2 = image + image_main
-        pred2 = clf.predict([feature2])[0]
-        final_pred = (pred1 + pred2) / 2.0
-        predictions.append(final_pred)
-
-    # Find the most similar.
     min_indexes = []
     min_value = float("inf")
-    for i, v in enumerate(predictions):
+    for i, v in enumerate(a_list):
         if v < min_value:
             min_indexes = [i]
             min_value = v
@@ -40,20 +25,42 @@ def predict_most_similar_image(clf, image_main, X):
         rnd_index = random.choice(min_indexes)
         min_indexes = [rnd_index]
 
-    predictions = [1 for _ in range(len(predictions))]
-    predictions[min_indexes[0]] = 0
+    return min_indexes[0]
 
+
+def predict_most_similar_image(clf, image_main, X):
+    """
+    Predict single class.
+
+    :param clf: classifier.
+    :param image_main: list representing an image.
+    :param X: list of images.
+    :return: list of numbers representing a single class prediction.
+    """
+    predictions = []
+    for image in X:
+        pred = clf.predict([[image_main, image]])[0]
+        predictions.append(pred)
+    min_index = get_index_of_min_value(predictions)
+    predictions = [1 for _ in range(len(predictions))]
+    predictions[min_index] = 0
     return predictions
 
 
 def n_way_one_shot_learning(clf, count, dataset, n, verbose=False):
     """
     Implementation of N-way one-shot learning generation.
+
+    :param clf: classifier.
+    :param count: int representing training count.
+    :param dataset: string of the dataset.
+    :param n: number of other images in the n-way one shot test.
+    :param verbose:
+    :return: float representing the final score of the test.
     """
     prefix = str(n)+"-way one-shot learning: "
     if verbose: show_progressbar(i=0, max_i=count, prefix=prefix)
 
-    # Do n-way one-shot learning "count" times.
     correct = 0
     for i in range(count):
         image_main, X, Y = Sampler.n_way_one_shot_learning(dataset=dataset, n=n)
