@@ -24,14 +24,16 @@ def get_sample(dataset, same_character):
 
     :param dataset: string representing the dataset name.
     :param same_character: bool representing if the the new image should be similar or not.
-    :return: 3-tuple containing two images and one target representing the similarity.
+    :return: 2-tuple containing a list of two images X and a list of the target Y.
+       (X, Y)
     """
     alphabet, character, version = __get_rnd_sample(dataset=dataset)
     image1 = load_image(path=__get_path(dataset, alphabet, character, version))
     character2, version2 = __pick_other_character(dataset, alphabet, character, version, same_character)
     image2 = load_image(path=__get_path(dataset, alphabet, character2, version2))
     Y = 0 if same_character else 1
-    return image1, image2, Y
+    X = [image1, image2]
+    return X, Y
 
 
 def generate_samples(dataset, count):
@@ -47,37 +49,14 @@ def generate_samples(dataset, count):
     samples = []
     counter = 0
     while counter < count:
-        image1, image2, Y = get_sample(dataset=dataset, same_character=same_character)
-        new_samples = object_cropping_sample(image1, image2, Y)
-        for sample in new_samples:
-            samples.append(sample)
+        X_single, Y_single = get_sample(dataset=dataset, same_character=same_character)
+        samples.append([X_single, Y_single])
         same_character = False if same_character else True
         counter += 1
     X = __column(samples, 0)
     Y = __column(samples, 1)
     X, Y = __shuffle_two_lists(X, Y)
     return X, Y
-
-
-def generate_samples_2D(dataset, count):
-    """
-    Generate a desired count of samples and convert them to a 2D arrays.
-    The ratio between targets is balanced.
-
-    :param dataset: string representing the dataset name.
-    :param count: int representing the desired number of samples to be generated.
-    :return: 2-tuple containing one list of 2D lists of samples X and a 1D list of targets Y.
-       (X_new, Y)
-    """
-    # Generate samples.
-    X, Y = generate_samples(dataset=dataset, count=count)
-
-    # Convert all sample-images from 1D to 2D.
-    X_new = []
-    for sample in X:
-        new_sample = ImageHandler.image_1D_to_2D(sample)
-        X_new.append(new_sample)
-    return X_new, Y
 
 
 def n_way_one_shot_learning(dataset, n=20):
@@ -113,24 +92,6 @@ def n_way_one_shot_learning(dataset, n=20):
     X, Y = __shuffle_two_lists(X, Y)
 
     return image_main, X, Y
-
-
-def object_cropping_sample(image1, image2, Y):
-    """
-    Merge two samples by calculating the differences between two samples.
-
-    :param image1: 1D list representing an image.
-    :param image2: 1D list representing an image.
-    :param Y: int representing the target.
-    :return: list of samples.
-    """
-    image1_2D_raw = ImageHandler.image_1D_to_2D(image1)
-    image1_2D = ImageHandler.extract_visual_object_2D(image1_2D_raw)
-    image1_flattened = ImageHandler.image_2D_to_1D(image1_2D)
-    image2_2D_raw = ImageHandler.image_1D_to_2D(image2)
-    image2_2D = ImageHandler.extract_visual_object_2D(image2_2D_raw)
-    image2_flattened = ImageHandler.image_2D_to_1D(image2_2D)
-    return __symmetrical_samples(image1_flattened, image2_flattened, Y)
 
 
 """
@@ -176,25 +137,6 @@ def __column(matrix, i):
     :return: list representing the desired column from the matrix.
     """
     return [row[i] for row in matrix]
-
-
-def __symmetrical_samples(image1, image2, Y):
-    """
-    Generate two symmetrical image samples.
-
-    :param image1: 1D list representing an image.
-    :param image2: 1D list representing an image.
-    :param Y: int representing the target. (Whether or not the images are similar).
-    :return: list of two symmetrical image samples.
-    """
-    samples = []
-    X = image1 + image2
-    X2 = image2 + image1
-    sample = [X, Y]
-    sample2 = [X2, Y]
-    samples.append(sample)
-    samples.append(sample2)
-    return samples
 
 
 def __rnd_subfolder(path):
