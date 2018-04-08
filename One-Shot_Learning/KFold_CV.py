@@ -1,30 +1,21 @@
 
-from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import KFold
-from Sampler import Sampler
+#from sklearn.model_selection import cross_val_score
+import Sampler
 import numpy as np
 
 
-"""
-Last stage of cross validation. (Fit and Predict). 
-"""
-def __cv_fit_predict(clf, X_train, Y_train, X_test, Y_test, verbose=False):
-    # Fit and predict.
-    if verbose: print("Fit")
-    clf.fit(X_train, Y_train)
-    if verbose: print("Predict")
-    predictions = clf.predict(X_test)
-    predictions = np.around(predictions)
+def kfold_cv(clf, X, Y, k_fold=5, verbose=False):
+    """
+    Classic K-Fold validation.
 
-    # Calculate score.
-    score = len([x for i, x in enumerate(predictions) if x == Y_test[i]]) / len(predictions)
-    return score
-
-
-"""
-Classic K-Fold validation. 
-"""
-def kfold_cross_validation(clf, X, Y, k_fold=5, verbose=False):
+    :param clf: classifier in sklearn format.
+    :param X: inputs.
+    :param Y: targets.
+    :param k_fold: int representing the number of k-folds.
+    :param verbose: bool representing whether information should be shown.
+    :return: list containing the cross validations scores.
+    """
     cv_scores = []
     for train, test in KFold(n_splits=k_fold).split(X):
         # split data
@@ -41,18 +32,26 @@ def kfold_cross_validation(clf, X, Y, k_fold=5, verbose=False):
     return cv_scores
 
 
-"""
-Custom K-Fold validation.
-User must input two paths (train and test). 
-"""
-def custom_kfold_cross_validation(clf, train_path, test_path, count=100, k_fold=5, verbose=False):
+
+def kfold_cv_unique_datasets(clf, train_path, test_path, count=100, k_fold=5, verbose=False):
+    """
+    Custom K-Fold validation using different datasets.
+
+    :param clf: classifier in sklearn format.
+    :param train_path: path to the dataset used for training.
+    :param test_path: path to the dataset used for testing.
+    :param count: int representing training count.
+    :param k_fold: int representing number of k-folds.
+    :param verbose: bool representing whether information should be shown.
+    :return: list containing the cross validations scores.
+    """
     cv_scores = []
     for i in range(k_fold):
         # Generate samples.
         if verbose: print("Generate training samples")
-        X_train, Y_train = Sampler.get_samples(path=train_path, count=count)
+        X_train, Y_train = Sampler.generate_samples(dataset=train_path, count=count)
         if verbose: print("Generate testing samples")
-        X_test, Y_test = Sampler.get_samples(path=test_path, count=count)
+        X_test, Y_test = Sampler.generate_samples(dataset=test_path, count=count)
 
         score = __cv_fit_predict(
             clf=clf,
@@ -64,3 +63,27 @@ def custom_kfold_cross_validation(clf, train_path, test_path, count=100, k_fold=
         cv_scores.append(score)
 
     return cv_scores
+
+
+def __cv_fit_predict(clf, X_train, Y_train, X_test, Y_test, verbose=False):
+    """
+    Last stage of cross validation. (Fit and Predict).
+
+    :param clf: classifier in sklearn format.
+    :param X_train: training inputs.
+    :param Y_train: trianing targets.
+    :param X_test: testing inputs.
+    :param Y_test: testing targets.
+    :param verbose: bool representing whether information should be shown.
+    :return: float representing the cross validation score.
+    """
+    # Fit and predict.
+    if verbose: print("Fit")
+    clf.fit(X_train, Y_train)
+    if verbose: print("Predict")
+    predictions = clf.predict(X_test)
+    predictions = np.around(predictions)
+
+    # Calculate score.
+    score = len([x for i, x in enumerate(predictions) if x == Y_test[i]]) / len(predictions)
+    return score
