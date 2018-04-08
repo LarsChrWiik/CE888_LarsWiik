@@ -1,229 +1,254 @@
 
-from PIL import Image
+import ImageHandler
 import os
-import numpy as np
 import random
 
 
+def load_image(path, compress=True, compression_size=26):
+    """
+    Load image given path.
+
+    :param path: string
+    :param compress: bool representing whether compression should be done.
+    :param compression_size: int representing compression size for a squared image.
+    :return:
+    """
+    if compress:
+        return ImageHandler.load_image_compressed(path=path, size=compression_size)
+    return ImageHandler.load_image_raw(path=path)
+
+
+def get_sample(dataset, same_character):
+    """
+    Generate an image sample.
+
+    :param dataset: string representing the dataset name.
+    :param same_character: bool representing if the the new image should be similar or not.
+    :return: 3-tuple containing two images and one target representing the similarity.
+    """
+    alphabet, character, version = __get_rnd_sample(dataset=dataset)
+    image1 = load_image(path=__get_path(dataset, alphabet, character, version))
+    character2, version2 = __pick_other_character(dataset, alphabet, character, version, same_character)
+    image2 = load_image(path=__get_path(dataset, alphabet, character2, version2))
+    Y = 0 if same_character else 1
+    return image1, image2, Y
+
+
+def generate_samples(dataset, count):
+    """
+    Generate a desired count of samples. The ratio between targets is balanced.
+
+    :param dataset:
+    :param count:
+    :return: 2-tuple containing one list of 1D lists of samples X and a 1D list of targets Y.
+       (X, Y)
+    """
+    same_character = random.randint(0, 1) == 0
+    samples = []
+    counter = 0
+    while counter < count:
+        image1, image2, Y = get_sample(dataset=dataset, same_character=same_character)
+        new_samples = object_cropping_sample(image1, image2, Y)
+        for sample in new_samples:
+            samples.append(sample)
+        same_character = False if same_character else True
+        counter += 1
+    X = __column(samples, 0)
+    Y = __column(samples, 1)
+    X, Y = __shuffle_two_lists(X, Y)
+    return X, Y
+
+
+def generate_samples_2D(dataset, count):
+    """
+    Generate a desired count of samples and convert them to a 2D arrays.
+    The ratio between targets is balanced.
+
+    :param dataset: string representing the dataset name.
+    :param count: int representing the desired number of samples to be generated.
+    :return: 2-tuple containing one list of 2D lists of samples X and a 1D list of targets Y.
+       (X_new, Y)
+    """
+    # Generate samples.
+    X, Y = generate_samples(dataset=dataset, count=count)
+
+    # Convert all sample-images from 1D to 2D.
+    X_new = []
+    for sample in X:
+        new_sample = ImageHandler.image_1D_to_2D(sample)
+        X_new.append(new_sample)
+    return X_new, Y
+
+
+def n_way_one_shot_learning(dataset, n=20):
+    """
+    Sampling of N-way one-shot learning test.
+
+    :param dataset: string representing the dataset name.
+    :param n: the number of images to compare with.
+    :return: 3-tuple representing the main image, n images, and n targets.
+       (image_main, X, Y)
+    """
+    # Pick initial Image.
+    alphabet, character, version = __get_rnd_sample(dataset)
+    image_main = load_image(path=__get_path(dataset, alphabet, character, version))
+
+    # Generate another version of the main image.
+    character2, version2 = __pick_other_character(
+        dataset, alphabet, character, version, same_character=True
+    )
+    image_similar = load_image(path=__get_path(dataset, alphabet, character2, version2))
+
+    # Initialize the samples X with according targets Y.
+    X = [image_similar]
+    Y = [0]
+
+    # Add n-1 images of other characters.
+    for i in range(n-1):
+        c, v = __pick_other_character(dataset, alphabet, character, version, same_character=False)
+        image_non_similar = load_image(path=__get_path(dataset, alphabet, c, v))
+        X.append(image_non_similar)
+        Y.append(1)
+
+    X, Y = __shuffle_two_lists(X, Y)
+
+    return image_main, X, Y
+
+
+def object_cropping_sample(image1, image2, Y):
+    """
+    Merge two samples by calculating the differences between two samples.
+
+    :param image1: 1D list representing an image.
+    :param image2: 1D list representing an image.
+    :param Y: int representing the target.
+    :return: list of samples.
+    """
+    image1_2D_raw = ImageHandler.image_1D_to_2D(image1)
+    image1_2D = ImageHandler.extract_visual_object_2D(image1_2D_raw)
+    image1_flattened = ImageHandler.image_2D_to_1D(image1_2D)
+    image2_2D_raw = ImageHandler.image_1D_to_2D(image2)
+    image2_2D = ImageHandler.extract_visual_object_2D(image2_2D_raw)
+    image2_flattened = ImageHandler.image_2D_to_1D(image2_2D)
+    return __symmetrical_samples(image1_flattened, image2_flattened, Y)
+
+
 """
-Shuffle two lists accordingly. 
+                 PRIVATE FUNCTIONS
 """
-def shuffle_two_lists(l1, l2):
+
+
+def __get_path(*arg):
+    """
+    Construct the path given a variable number of sub-folders.
+
+    :param arg: list represent the sub-folders and the last file
+    :return: string representing the final path.
+    """
+    path = ""
+    for i, folder in enumerate(arg):
+        path += folder
+        if i != len(arg)-1:
+            path += "/"
+    return path
+
+
+def __shuffle_two_lists(l1, l2):
+    """
+    Shuffle two lists accordingly.
+
+    :param l1: list
+    :param l2: list
+    :return: list that is shuffled
+    """
     z = list(zip(l1, l2))
     random.shuffle(z)
     a, b = zip(*z)
     return list(a), list(b)
 
 
-"""
-Get column from matrix. 
-"""
-def column(matrix, i):
+def __column(matrix, i):
+    """
+    Get column from matrix.
+
+    :param matrix: 2D list
+    :param i: int that represent the column index that should be extracted.
+    :return: list representing the desired column from the matrix.
+    """
     return [row[i] for row in matrix]
 
 
-"""
-Class containing static methods for feature sector samples
-for character recognition. 
-Each sample contains 2*105*105 pixels with 
-"""
-class Sampler:
+def __symmetrical_samples(image1, image2, Y):
+    """
+    Generate two symmetrical image samples.
 
+    :param image1: 1D list representing an image.
+    :param image2: 1D list representing an image.
+    :param Y: int representing the target. (Whether or not the images are similar).
+    :return: list of two symmetrical image samples.
+    """
+    samples = []
+    X = image1 + image2
+    X2 = image2 + image1
+    sample = [X, Y]
+    sample2 = [X2, Y]
+    samples.append(sample)
+    samples.append(sample2)
+    return samples
+
+
+def __rnd_subfolder(path):
     """
     Get random subfolder of given path.
+
+    :param path: string.
+    :return: string representing a path of a random sub-folder of the given path.
     """
-    @staticmethod
-    def __rnd_subfolder(path, alphabet=None, character=None):
-        full_path = path
-        if alphabet is not None:
-            full_path += "/" + alphabet
-            if character is not None:
-                full_path += "/" + character
-        x = os.listdir(full_path)
-        x = [x for x in x if x != ".DS_Store"]
-        return random.choice(x)
+    x = os.listdir(path)
+    x = [x for x in x if x != ".DS_Store"]
+    return random.choice(x)
 
 
+def __get_rnd_sample(dataset):
     """
-    Load raw image as a list given path.
-    Contain numbers from 0 to 255. 
+    Generate path for new random sample.
+
+    :param dataset: string representing the dataset name.
+    :return: 3-tuple containing alphabet, character, and version names.
     """
-    @staticmethod
-    def load_image_raw(path, alphabet, character, version):
-        return list(Image.open(path + "/" + alphabet + "/" + character + "/" + version).getdata())
+    # Pick random alphabet, character, and version.
+    alphabet = __rnd_subfolder(dataset)
+    character = __rnd_subfolder(__get_path(dataset, alphabet))
+    version = __rnd_subfolder(__get_path(dataset, alphabet, character))
+    return alphabet, character, version
 
 
+def __pick_other_character(dataset, alphabet, character, version, same_character):
     """
-    Load image as a list given path and compress it.
-    Contain numbers from 0 to 255. 
+    Generate path for a random character in same alphabet.
+
+    :param dataset: string representing the dataset name.
+    :param alphabet: string representing the alphabet name.
+    :param character: string representing the character name.
+    :param version: string representing the version name.
+    :param same_character: bool representing if the the new image should be similar or not.
+    :return: 2-tuple containing strings representing the new character and version.
     """
-    @staticmethod
-    def load_image_compressed(path, alphabet, character, version, size):
-        image = Image.open(path + "/" + alphabet + "/" + character + "/" + version)
-        image_compressed = image.resize((size, size), Image.ANTIALIAS)
-        return list(image_compressed.getdata())
+    character2 = character
+    version2 = version
 
+    if same_character:
+        # Pick random same character.
+        while True:
+            version2 = __rnd_subfolder(__get_path(dataset, alphabet, character2))
+            if version2 != version:
+                break
+    else:
+        # Pick random non-same character.
+        while True:
+            character2 = __rnd_subfolder(__get_path(dataset, alphabet))
+            version2 = __rnd_subfolder(__get_path(dataset, alphabet, character2))
+            if character2 != character and version2 != version:
+                break
 
-    """
-    Load image as a list given path.
-    """
-    @staticmethod
-    def load_image(path, alphabet, character, version):
-        image = Sampler.load_image_compressed(
-            path=path,
-            alphabet=alphabet,
-            character=character,
-            version=version,
-            size=26
-        )
-
-        # Transform the image into input features between 0 and 1.
-        for i, pixel in enumerate(image):
-            if pixel != 0:
-                image[i] = 1
-
-        return image
-
-
-    """
-    Generate path for new random sample. 
-    """
-    @staticmethod
-    def __get_rnd_sample(path):
-        # Pick random alphabet, character, and version.
-        alphabet = Sampler.__rnd_subfolder(path)
-        character = Sampler.__rnd_subfolder(path, alphabet)
-        version = Sampler.__rnd_subfolder(path, alphabet, character)
-        return alphabet, character, version
-
-
-    """
-    Generate path for random character in same alphabet.
-    """
-    @staticmethod
-    def __pick_other_character(path, alphabet, character, version, same_character):
-        character2 = character
-        version2 = version
-
-        if same_character:
-            # Pick random same character.
-            while True:
-                version2 = Sampler.__rnd_subfolder(path, alphabet, character2)
-                if version2 != version:
-                    break
-        else:
-            # Pick random non-same character.
-            while True:
-                character2 = Sampler.__rnd_subfolder(path, alphabet)
-                version2 = Sampler.__rnd_subfolder(path, alphabet, character2)
-                if character2 != character and version2 != version:
-                    break
-
-        return character2, version2
-
-
-    """
-    Generate one sample. 
-    """
-    @staticmethod
-    def __get_sample(path, same_character):
-
-        # Pick random alphabet, character, and version.
-        alphabet, character, version = Sampler.__get_rnd_sample(path=path)
-        image1 = Sampler.load_image(path, alphabet, character, version)
-
-        # Pick other character from the same alphabet. (either same or not).
-        character2, version2 = Sampler.__pick_other_character(
-            path, alphabet, character, version, same_character
-        )
-        image2 = Sampler.load_image(path, alphabet, character2, version2)
-
-        Y = 0 if same_character else 1
-
-        return image1, image2, Y
-
-
-    """
-    Generate several samples with equal target ratio.
-    One sample contains one feature vector X with two images with a corresponding target Y. 
-    """
-    @staticmethod
-    def get_samples(path, count):
-        # Generate random initial target.
-        same_character = random.randint(0, 1) == 0
-        samples = []
-        counter = 0
-        while counter < count:
-            # Generate sample.
-            image1, image2, Y = Sampler.__get_sample(
-                path=path,
-                same_character=same_character
-            )
-            X = image1 + image2
-            X2 = image2 + image1
-            sample = [X, Y]
-            sample2 = [X2, Y]
-            samples.append(sample)
-            samples.append(sample2)
-            same_character = False if same_character else True
-            counter += 1
-
-        # Concatenate columns.
-        X = column(samples, 0)
-        Y = column(samples, 1)
-        X, Y = shuffle_two_lists(X, Y)
-        return X, Y
-
-
-    """
-    Generate a sample and convert it to a 2D array. 
-    """
-    @staticmethod
-    def get_samples_2D(path, count):
-        X, Y = Sampler.get_samples(path=path, count=count)
-        X_new = []
-        for sample in X:
-            new_sample = []
-            r = []
-            for i, pixel in enumerate(sample):
-                r.append(pixel)
-                if (i+1) % 105 == 0:
-                    new_sample.append(r)
-                    r = []
-            X_new.append(new_sample)
-        return X_new, Y
-
-
-    """
-    Implementation of N-way one-shot learning generation. 
-    """
-    @staticmethod
-    def n_way_one_shot_learning(path, n=20):
-
-        # Pick initial Image.
-        alphabet, character, version = Sampler.__get_rnd_sample(path)
-        image_main = Sampler.load_image(path, alphabet, character, version)
-        X = []
-        Y = []
-
-        # Pick other character from the same alphabet.
-        character2, version2 = Sampler.__pick_other_character(
-            path, alphabet, character, version, same_character=True
-        )
-        similar_character = Sampler.load_image(path, alphabet, character2, version2)
-        X.append(similar_character)
-        Y.append(0) # 1 indicates: Similar character.
-
-        # Add n-1 non similar images.
-        for i in range(n-1):
-            # Pick other character from the same alphabet.
-            c, v = Sampler.__pick_other_character(
-                path, alphabet, character, version, same_character=False
-            )
-            non_similar_character = Sampler.load_image(path, alphabet, c, v)
-            X.append(non_similar_character)
-            Y.append(1) # 1 indicates: Not similar character.
-
-        X, Y = shuffle_two_lists(X, Y)
-
-        return image_main, X, Y
+    return character2, version2
