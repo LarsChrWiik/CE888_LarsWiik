@@ -2,6 +2,7 @@
 from tpot import TPOTRegressor
 from tpot import TPOTClassifier
 import numpy as np
+from PredictionModel import PredictionModel
 
 import Sampler
 
@@ -12,10 +13,14 @@ Optimize algorithms and parameters using TPOT for Regression trees.
 def tpot_optimization_reg(count, train_path, test_path, verbose=False):
 
     # Generate samples.
+    formater = PredictionModel()
+
     if verbose: print("Get train samples. ")
     X_train, Y_train = Sampler.generate_samples(dataset=train_path, count=count)
+    X_train, Y_train = formater._format_fit_inputs(X=X_train, Y=Y_train)
     if verbose: print("Get test samples. ")
     X_test, Y_test = Sampler.generate_samples(dataset=test_path, count=count)
+    X_test, Y_test = formater._format_fit_inputs(X=X_test, Y=Y_test)
 
     tpot_config = {
         'sklearn.ensemble.RandomForestRegressor': {
@@ -47,7 +52,7 @@ def tpot_optimization_reg(count, train_path, test_path, verbose=False):
 
     tpot = TPOTRegressor(
         generations=5,
-        population_size=15,
+        population_size=10,
         verbosity=2,
         config_dict=tpot_config
     )
