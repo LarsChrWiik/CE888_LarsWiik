@@ -1,6 +1,7 @@
 
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.ensemble import ExtraTreesRegressor
 from xgboost import XGBRegressor
 from xgboost import XGBClassifier
@@ -17,13 +18,25 @@ class PredictionModel:
     Class containing the logic for the predictive model.
     """
 
-    clf = XGBRegressor(
-        max_depth=8,
-        learning_rate=0.02,
-        n_estimators=1000,
-        objective="reg:linear",
-        booster='gbtree',
-        n_jobs=-1
+    """
+    clf = XGBRegressor()
+    """
+
+    # Pipeline 6.
+    # Score on the training set was:-0.1543347989725296
+    clf = make_pipeline(
+        StackingEstimator(
+            estimator=XGBRegressor(
+                booster="dart",
+                learning_rate=0.15,
+                max_depth=4,
+                n_estimators=100,
+                n_jobs=-1,
+                objective="reg:linear"
+            )
+        ),
+        StackingEstimator(estimator=GradientBoostingRegressor(loss="lad", max_depth=3, n_estimators=25)),
+        GradientBoostingRegressor(loss="ls", max_depth=3, n_estimators=10)
     )
 
     """
@@ -140,8 +153,8 @@ class PredictionModel:
         :return: float representing the prediction.
         """
         X, _ = self._format_fit_inputs([X], [[0]])
-        pred1 = self.clf.predict(X[0])[0]
-        pred2 = self.clf.predict(X[1])[0]
+        pred1 = self.clf.predict([X[0]])[0]
+        pred2 = self.clf.predict([X[1]])[0]
         return (pred1 + pred2) / 2.0
 
 
