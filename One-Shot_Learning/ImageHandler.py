@@ -7,10 +7,13 @@ def image_differences_2D(img1, img2):
     """
     Generates an image that represents the differences between two images.
 
-    :param img1: 2D list representing an image.
-    :param img2: 2D list representing an image.
+    :param img1: 1D or 2D list representing an image.
+    :param img2: 1D or 2D list representing an image.
     :return: 2D list representing an image.
     """
+    img1 = ensure_2D_image(img1)
+    img2 = ensure_2D_image(img2)
+
     img_diff = []
     for i, r in enumerate(img1):
         new_row = []
@@ -173,3 +176,50 @@ def extract_visual_object_1D(image):
     image_2D = image_1D_to_2D(image)
     image_object = extract_visual_object_2D(image_2D)
     return image_2D_to_1D(image_object)
+
+
+def ensure_2D_image(image):
+    """
+    Ensures that an image is 2D.
+
+    :param image: 1D or 2D list representing an image.
+    :return: 2D list representing an image.
+    """
+    if not is_2D_image(image):
+        return image_1D_to_2D(image)
+    return image
+
+
+def is_1D_image(image):
+    """
+    Checks if image is 1D list.
+
+    :param image: unknown object.
+    :return: bool
+    """
+    try:
+        if not isinstance(image, list):
+            return False
+        if isinstance(image[0], list):
+            return False
+        return True
+    except:
+        pass
+    return False
+
+
+def is_2D_image(image):
+    """
+    Checks if image is 2D list.
+
+    :param image: unknown object.
+    :return: bool
+    """
+    try:
+        if not isinstance(image, list):
+            return False
+        if isinstance(image[0], list):
+            return True
+    except:
+        pass
+    return False
