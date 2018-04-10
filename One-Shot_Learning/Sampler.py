@@ -4,7 +4,7 @@ import os
 import random
 
 
-def load_image(path, compress=True, compression_size=26):
+def load_image(path, compress=True, compression_size=28):
     """
     Load image given path.
 
