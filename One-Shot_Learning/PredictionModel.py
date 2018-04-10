@@ -130,14 +130,55 @@ class PredictionModel:
         """
         new_samples = []
         for i, x in enumerate(X):
-            img1 = self.__object_cropp_scale(x[0])
-            img2 = self.__object_cropp_scale(x[1])
+            img1 = self.__format_image(x[0])
+            img2 = self.__format_image(x[1])
             samples = self.__symmetrical_samples(img1, img2, Y[i])
             for sample in samples:
                 new_samples.append(sample)
         X = self.__column(new_samples, 0)
         Y = self.__column(new_samples, 1)
         return X, Y
+
+
+    def __format_image(self, image):
+        """
+        Format an image using simple object detection and simple image convolution.
+
+        :param image: 1D list or 2D list - representing an image.
+        :return: 1D list representing an image.
+        """
+        img_cropped = self.__object_cropp_scale(image)
+        # Gaussian blur 3 × 3.
+        kernel = [
+            [0, 2, 0],
+            [2, 4, 2],
+            [0, 2, 0]
+        ]
+        img_conv = self.image_convolution(image=img_cropped, kernel=kernel)
+        img1 = ImageHandler.image_2D_to_1D(img_conv)
+        return img1
+
+
+    def image_convolution(self, image, kernel):
+        """
+        Applies image convolution to an image.
+
+        :param image: 1D list or 2D list - representing an image.
+        :return: 2D list representing an image after the convolution process.
+        """
+        image = ImageHandler.ensure_2D_image(image)
+
+        image_conv = []
+        for i in range(len(image)-len(kernel)):
+            image_conv_row = []
+            for j in range(len(image[0])-len(kernel[0])):
+                value = 0
+                for i2 in range(len(kernel)):
+                    for j2 in range(len(kernel[0])):
+                        value += image[i+i2][j+j2] * kernel[i2][j2]
+                image_conv_row.append(value)
+            image_conv.append(image_conv_row)
+        return image_conv
 
 
     """
