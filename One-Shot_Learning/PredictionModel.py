@@ -148,20 +148,29 @@ class PredictionModel:
         :return: 1D list representing an image.
         """
         img_cropped = self.__object_cropp_scale(image)
+        img_conv = self.__image_convolution(img_cropped)
+        return ImageHandler.image_2D_to_1D(img_conv)
+
+
+    def __image_convolution(self, image):
+        """
+        Applies image convolution to an image.
+
+        :param image: 1D list or 2D list - representing an image.
+        :return: 2D list representing an image after the convolution process.
+        """
         # Gaussian blur 3 × 3.
         kernel = [
             [0, 2, 0],
             [2, 4, 2],
             [0, 2, 0]
         ]
-        img_conv = self.image_convolution(image=img_cropped, kernel=kernel)
-        img1 = ImageHandler.image_2D_to_1D(img_conv)
-        return img1
+        return self.__custom_image_convolution(image=image, kernel=kernel, division=1)
 
 
-    def image_convolution(self, image, kernel):
+    def __custom_image_convolution(self, image, kernel, division=1):
         """
-        Applies image convolution to an image.
+        Applies image convolution to an image with custom kernel.
 
         :param image: 1D list or 2D list - representing an image.
         :return: 2D list representing an image after the convolution process.
@@ -176,7 +185,7 @@ class PredictionModel:
                 for i2 in range(len(kernel)):
                     for j2 in range(len(kernel[0])):
                         value += image[i+i2][j+j2] * kernel[i2][j2]
-                image_conv_row.append(value)
+                image_conv_row.append(value / division)
             image_conv.append(image_conv_row)
         return image_conv
 
