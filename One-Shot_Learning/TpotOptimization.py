@@ -24,37 +24,39 @@ def tpot_optimization_reg(count, train_path, test_path, verbose=False):
 
     tpot_config = {
         'sklearn.ensemble.RandomForestRegressor': {
-            'n_estimators': [10, 25, 100, 300, 1000],
+            'n_estimators': [10, 25, 50, 75, 100, 300, 1000],
             'max_features': ["auto", "sqrt", "log2"],
-            'max_depth': [2, 3, 4],
+            'max_depth': [2, 3, 4, 5, 6, 8, 10],
             'n_jobs': [-1]
         },
         'sklearn.ensemble.ExtraTreesRegressor': {
-            'n_estimators': [10, 25, 100, 300, 1000],
+            'n_estimators': [10, 25, 50, 75, 100, 300, 1000],
             'max_features': ["auto", "sqrt", "log2"],
-            'max_depth': [2, 3, 4],
+            'max_depth': [2, 3, 4, 5, 6, 8, 10],
             'n_jobs': [-1]
         },
         'sklearn.ensemble.GradientBoostingRegressor': {
-            'n_estimators': [10, 25, 100, 300, 1000],
+            'n_estimators': [10, 25, 50, 75, 100, 300, 1000],
+            "learning_rate": [0.02, 0.05, 0.1, 0.15, 0.2],
             'loss': ["ls", "lad", "huber", "quantile"],
-            'max_depth': [2, 3, 4]
+            'max_depth': [2, 3, 4, 5, 6, 8, 10]
         },
         'xgboost.XGBRegressor': {
-            'n_estimators': [10, 25, 100, 300, 1000],
+            'n_estimators': [10, 25, 50, 75, 100, 300, 1000],
             'booster': ["gbtree", "gblinear", "dart"],
             "learning_rate": [0.02, 0.05, 0.1, 0.15, 0.2],
-            'max_depth': [2, 4, 6, 8, 10],
+            'max_depth': [2, 3, 4, 5, 6, 8, 10],
             'n_jobs': [-1],
-            'objective': ["reg:linear", "multi:softmax", "multi:softprob"]
+            'objective': ["reg:linear"]
         }
     }
 
     tpot = TPOTRegressor(
         generations=5,
-        population_size=10,
+        population_size=30,
         verbosity=2,
-        config_dict=tpot_config
+        config_dict=tpot_config,
+        cv=5
     )
 
     tpot.fit(np.array(X_train), np.array(Y_train))
