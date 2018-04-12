@@ -59,8 +59,10 @@ def kfold_cv_unique_datasets(clf, train_path, test_path, count=100, k_fold=5, ve
             X_test=X_test, Y_test=Y_test,
             verbose=verbose
         )
-        if verbose: print("(" + str(i) + ") - cv: " + str(score))
+        if verbose: print("(" + str(i+1) + ") - cv: " + str(score))
         cv_scores.append(score)
+
+    if verbose: print("Avg cv score = " + str(sum(cv_scores)/len(cv_scores)))
 
     return cv_scores
 
