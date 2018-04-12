@@ -24,12 +24,19 @@ def start_tpot_optimazation(count):
     )
 
 
-def start_20_way_one_shot(clf, count):
+def start_20_way_one_shot(clf, count, interpretability=False):
     """
     Train the predictionModel and test it on 20-way one-shot learning
     """
     print("Start 20-way one-shot learning")
-    score = n_way_one_shot_learning(clf=clf, count=count, dataset=Dataset.data_evaluation, n=20, verbose=True)
+    score = n_way_one_shot_learning(
+        clf=clf,
+        count=count,
+        dataset=Dataset.data_evaluation,
+        n=20,
+        verbose=True,
+        interpretability=interpretability
+    )
     print("Score =", score)
 
 
@@ -62,8 +69,8 @@ def pickle_models():
 def main():
     #start_tpot_optimazation(count=10000)
 
-    clf = ModelHandler.train_model(clf=PredictionModel(), count=100, verbose=True)
-    start_20_way_one_shot(clf=clf, count=400)
+    clf = ModelHandler.train_model(clf=PredictionModel(), count=10000, verbose=True)
+    start_20_way_one_shot(clf=clf, count=400, interpretability=True)
 
     #start_cross_validation(clf=PredictionModel(), count=10000, k_fold=5)
 

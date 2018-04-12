@@ -78,48 +78,91 @@ def n_way_one_shot_learning(clf, count, dataset, n, verbose=False, interpretabil
 
     if interpretability: __remove_interpret_folder()
 
-    correct = 0
+    correct_count = 0
     for i in range(count):
         image_main, X, Y = Sampler.n_way_one_shot_learning(dataset=dataset, n=n)
         prediction = predict(clf=clf, image_main=image_main, X=X)
         prediction_single = transform_to_signle_prediction(prediction)
-        if prediction_single == Y: correct += 1
 
         # Save images for interpretability reasons.
-        if interpretability and (prediction == Y and correct < 10) or (prediction != Y and i-correct < 10):
-            __save_interpret_image(image=image_main, iteration=i, name="main_image", outside_images=True)
-            for j, image in enumerate(X):
-                __save_interpret_image(
-                    image=image,
-                    iteration=i,
-                    name=str(round(prediction[j], 4)) + "_" + str(j)
-                )
-            __save_interpret_image(
-                image=X[get_index_of_min_value(prediction)],
-                iteration=i,
-                name="main_image",
-                outside_images=True
-            )
+        __save_image_interpretability(
+            image_main=image_main,
+            prediction=prediction,
+            prediction_single=prediction_single,
+            X=X, Y=Y, i=i,
+            correct_count=correct_count,
+            interpretability=interpretability
+        )
 
+        if prediction_single == Y: correct_count += 1
         if verbose: show_progressbar(i=i+1, max_i=count, prefix=prefix)
     if verbose: show_progressbar(i=count, max_i=count, prefix=prefix, finish=True)
 
-    return (correct*100) / count
+    return (correct_count*100) / count
+
+
+def __save_image_interpretability(
+        image_main,
+        prediction,
+        prediction_single,
+        X,
+        Y,
+        i,
+        correct_count,
+        interpretability
+):
+    """
+    Function to save images during 20-way one-shot learning for interpretability reasons.
+
+    :param image_main: list of float.
+    :param prediction: list of float.
+    :param prediction_single: lost of int.
+    :param X: list of images.
+    :param Y: list of targets.
+    :param i: int, iteration number.
+    :param correct_count: int, count of number of correct classifications.
+    :param interpretability: bool indicating if interpretability should be considered.
+    :return:
+    """
+    image_save_limit = 10
+    if interpretability and ((prediction_single == Y and correct_count < image_save_limit)
+                             or (prediction_single != Y and i - correct_count < image_save_limit)):
+        correct_or_wrong = "correct" if prediction_single == Y else "wrong"
+        folder_name = str(i + 1) + "_" + correct_or_wrong
+        for j, image in enumerate(X):
+            target_name = "_target" if j == get_index_of_min_value(Y) else ""
+            __save_interpret_image(
+                image=image,
+                folder_name=folder_name,
+                name=str(round(prediction[j], 4)) + "_" + str(j) + target_name
+            )
+        __save_interpret_image(
+            image=image_main,
+            folder_name=folder_name,
+            name="main_image",
+            outside_images=True
+        )
+        __save_interpret_image(
+            image=X[get_index_of_min_value(prediction)],
+            folder_name=folder_name,
+            name=str(round(prediction[get_index_of_min_value(prediction)], 4)),
+            outside_images=True
+        )
 
 
 def __remove_interpret_folder():
     rmtree("./interpretability", ignore_errors=True)
 
 
-def __save_interpret_image(image, iteration, name, outside_images=False):
+def __save_interpret_image(image, folder_name, name, outside_images=False):
     img = ImageHandler.ensure_1D_image(image)
     size = int(math.sqrt(len(img)))
     img2 = Image.new("1", (size, size))
     img2.putdata(img)
 
-    path = "./interpretability/" + str(iteration) + "/" + "images"
+    path = "./interpretability/" + str(folder_name) + "/" + "images"
     if outside_images:
-        path = "./interpretability/" + str(iteration)
+        path = "./interpretability/" + str(folder_name)
     if not os.path.exists(path): os.makedirs(path)
 
     img2.save(path + "/" + name + '.png')
