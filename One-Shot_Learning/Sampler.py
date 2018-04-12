@@ -2,6 +2,7 @@
 import ImageHandler
 import os
 import random
+import PATH
 
 
 def load_image(path, compress=True, compression_size=28):
@@ -28,9 +29,9 @@ def get_sample(dataset, same_character):
        (X, Y)
     """
     alphabet, character, version = __get_rnd_sample(dataset=dataset)
-    image1 = load_image(path=__get_path(dataset, alphabet, character, version))
+    image1 = load_image(path=PATH.get_path(dataset, alphabet, character, version))
     character2, version2 = __pick_other_character(dataset, alphabet, character, version, same_character)
-    image2 = load_image(path=__get_path(dataset, alphabet, character2, version2))
+    image2 = load_image(path=PATH.get_path(dataset, alphabet, character2, version2))
     Y = 0 if same_character else 1
     X = [image1, image2]
     return X, Y
@@ -70,13 +71,13 @@ def n_way_one_shot_learning(dataset, n=20):
     """
     # Pick initial Image.
     alphabet, character, version = __get_rnd_sample(dataset)
-    image_main = load_image(path=__get_path(dataset, alphabet, character, version))
+    image_main = load_image(path=PATH.get_path(dataset, alphabet, character, version))
 
     # Generate another version of the main image.
     character2, version2 = __pick_other_character(
         dataset, alphabet, character, version, same_character=True
     )
-    image_similar = load_image(path=__get_path(dataset, alphabet, character2, version2))
+    image_similar = load_image(path=PATH.get_path(dataset, alphabet, character2, version2))
 
     # Initialize the samples X with according targets Y.
     X = [image_similar]
@@ -85,7 +86,7 @@ def n_way_one_shot_learning(dataset, n=20):
     # Add n-1 images of other characters.
     for i in range(n-1):
         c, v = __pick_other_character(dataset, alphabet, character, version, same_character=False)
-        image_non_similar = load_image(path=__get_path(dataset, alphabet, c, v))
+        image_non_similar = load_image(path=PATH.get_path(dataset, alphabet, c, v))
         X.append(image_non_similar)
         Y.append(1)
 
@@ -97,21 +98,6 @@ def n_way_one_shot_learning(dataset, n=20):
 """
                  PRIVATE FUNCTIONS
 """
-
-
-def __get_path(*arg):
-    """
-    Construct the path given a variable number of sub-folders.
-
-    :param arg: list represent the sub-folders and the last file
-    :return: string representing the final path.
-    """
-    path = ""
-    for i, folder in enumerate(arg):
-        path += folder
-        if i != len(arg)-1:
-            path += "/"
-    return path
 
 
 def __shuffle_two_lists(l1, l2):
@@ -160,8 +146,8 @@ def __get_rnd_sample(dataset):
     """
     # Pick random alphabet, character, and version.
     alphabet = __rnd_subfolder(dataset)
-    character = __rnd_subfolder(__get_path(dataset, alphabet))
-    version = __rnd_subfolder(__get_path(dataset, alphabet, character))
+    character = __rnd_subfolder(PATH.get_path(dataset, alphabet))
+    version = __rnd_subfolder(PATH.get_path(dataset, alphabet, character))
     return alphabet, character, version
 
 
@@ -182,14 +168,14 @@ def __pick_other_character(dataset, alphabet, character, version, same_character
     if same_character:
         # Pick random same character.
         while True:
-            version2 = __rnd_subfolder(__get_path(dataset, alphabet, character2))
+            version2 = __rnd_subfolder(PATH.get_path(dataset, alphabet, character2))
             if version2 != version:
                 break
     else:
         # Pick random non-same character.
         while True:
-            character2 = __rnd_subfolder(__get_path(dataset, alphabet))
-            version2 = __rnd_subfolder(__get_path(dataset, alphabet, character2))
+            character2 = __rnd_subfolder(PATH.get_path(dataset, alphabet))
+            version2 = __rnd_subfolder(PATH.get_path(dataset, alphabet, character2))
             if character2 != character and version2 != version:
                 break
 
