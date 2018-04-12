@@ -1,14 +1,5 @@
 
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.ensemble import GradientBoostingRegressor
-from sklearn.ensemble import ExtraTreesRegressor
 from xgboost import XGBRegressor
-from xgboost import XGBClassifier
-from sklearn.neural_network import MLPRegressor
-
-from sklearn.pipeline import make_pipeline
-from tpot.builtins import StackingEstimator
 import numpy as np
 import ImageHandler
 import sys
