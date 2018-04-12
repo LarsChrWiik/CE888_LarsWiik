@@ -5,6 +5,7 @@ from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.ensemble import ExtraTreesRegressor
 from xgboost import XGBRegressor
 from xgboost import XGBClassifier
+from sklearn.neural_network import MLPRegressor
 
 from sklearn.pipeline import make_pipeline
 from tpot.builtins import StackingEstimator
@@ -18,45 +19,17 @@ class PredictionModel:
     Class containing the logic for the predictive model.
     """
 
-    """
-    clf = XGBRegressor()
-    """
-
-    # Pipeline 6.
-    # Score on the training set was:-0.1543347989725296
-    clf = make_pipeline(
-        StackingEstimator(
-            estimator=XGBRegressor(
-                booster="dart",
-                learning_rate=0.15,
-                max_depth=4,
-                n_estimators=100,
-                n_jobs=-1,
-                objective="reg:linear"
-            )
-        ),
-        StackingEstimator(estimator=GradientBoostingRegressor(loss="lad", max_depth=3, n_estimators=25)),
-        GradientBoostingRegressor(loss="ls", max_depth=3, n_estimators=10)
+    # Measured to 52.25% 20-way one-shot learning (10 000)
+    # -0.15169617230917484 (My test)
+    # -0.13400621878282912 (Tpot test)
+    clf = XGBRegressor(
+        booster="dart",
+        learning_rate=0.1,
+        max_depth=4,
+        n_estimators=300,
+        n_jobs=-1,
+        objective="reg:linear"
     )
-
-    """
-    # Pipeline3
-    # Score on the training set was:-0.2311721732
-    clf = make_pipeline(
-        StackingEstimator(
-            estimator=ExtraTreesRegressor(
-                max_features="log2",
-                n_estimators=500,
-                n_jobs=-1
-            )
-        ),
-        RandomForestRegressor(
-            max_features="sqrt",
-            n_estimators=500,
-            n_jobs=-1
-        )
-    )
-    """
 
 
     def fit(self, X, Y):
@@ -134,10 +107,18 @@ class PredictionModel:
             img2 = self.__format_image(x[1])
             samples = self.__symmetrical_samples(img1, img2, Y[i])
             for sample in samples:
+                sample[0] += (ImageHandler.ensure_1D_image(
+                    ImageHandler.image_differences_2D(img1, img2))
+                )
                 new_samples.append(sample)
         X = self.__column(new_samples, 0)
         Y = self.__column(new_samples, 1)
         return X, Y
+
+
+    """
+                     PRIVATE FUNCTIONS
+    """
 
 
     def __format_image(self, image):
@@ -149,7 +130,7 @@ class PredictionModel:
         """
         img_cropped = self.__object_cropp_scale(image)
         img_conv = self.__image_convolution(img_cropped)
-        return ImageHandler.image_2D_to_1D(img_conv)
+        return ImageHandler.ensure_1D_image(img_conv)
 
 
     def __image_convolution(self, image):
@@ -161,11 +142,11 @@ class PredictionModel:
         """
         # Gaussian blur 3 × 3.
         kernel = [
-            [0, 2, 0],
+            [1, 2, 1],
             [2, 4, 2],
-            [0, 2, 0]
+            [1, 2, 1]
         ]
-        return self.__custom_image_convolution(image=image, kernel=kernel, division=1)
+        return self.__custom_image_convolution(image=image, kernel=kernel, division=16)
 
 
     def __custom_image_convolution(self, image, kernel, division=1):
@@ -178,21 +159,19 @@ class PredictionModel:
         image = ImageHandler.ensure_2D_image(image)
 
         image_conv = []
-        for i in range(len(image)-len(kernel)):
+        for i in range(len(image)):
             image_conv_row = []
-            for j in range(len(image[0])-len(kernel[0])):
+            for j in range(len(image[0])):
                 value = 0
                 for i2 in range(len(kernel)):
                     for j2 in range(len(kernel[0])):
-                        value += image[i+i2][j+j2] * kernel[i2][j2]
+                        try:
+                            value += image[i + i2 - 1][j + j2 - 1] * kernel[i2][j2]
+                        except:
+                            pass
                 image_conv_row.append(value / division)
             image_conv.append(image_conv_row)
         return image_conv
-
-
-    """
-                     PRIVATE FUNCTIONS
-    """
 
 
     def __predict_single(self, X):
@@ -227,9 +206,9 @@ class PredictionModel:
         :param image1: 1D list representing an image.
         :return: 1D list representing an image that is cropped and scaled.
         """
-        image1_2D_raw = ImageHandler.image_1D_to_2D(image1)
+        image1_2D_raw = ImageHandler.ensure_2D_image(image1)
         image1_2D = ImageHandler.extract_visual_object_2D(image1_2D_raw)
-        return ImageHandler.image_2D_to_1D(image1_2D)
+        return ImageHandler.ensure_1D_image(image1_2D)
 
 
     def __symmetrical_samples(self, image1, image2, Y):
