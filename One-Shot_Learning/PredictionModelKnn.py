@@ -1,4 +1,8 @@
 
+"""
+This is a test class and is not used in this project.
+"""
+
 from PredictionModel import PredictionModel
 from sklearn.neighbors import KNeighborsClassifier
 
