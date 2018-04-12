@@ -82,20 +82,25 @@ def n_way_one_shot_learning(clf, count, dataset, n, verbose=False, interpretabil
     for i in range(count):
         image_main, X, Y = Sampler.n_way_one_shot_learning(dataset=dataset, n=n)
         prediction = predict(clf=clf, image_main=image_main, X=X)
+        prediction_single = transform_to_signle_prediction(prediction)
+        if prediction_single == Y: correct += 1
 
+        # Save images for interpretability reasons.
         if interpretability and (prediction == Y and correct < 10) or (prediction != Y and i-correct < 10):
-            __save_interpret_image(image=image_main, iteration=i, is_main=True)
-            for image in enumerate(X):
+            __save_interpret_image(image=image_main, iteration=i, name="main_image", outside_images=True)
+            for j, image in enumerate(X):
                 __save_interpret_image(
                     image=image,
                     iteration=i,
-                    is_correct=prediction == Y,
-                    score=prediction[i]
+                    name=str(round(prediction[j], 4)) + "_" + str(j)
                 )
+            __save_interpret_image(
+                image=X[get_index_of_min_value(prediction)],
+                iteration=i,
+                name="main_image",
+                outside_images=True
+            )
 
-        prediction = transform_to_signle_prediction(prediction)
-
-        if prediction == Y: correct += 1
         if verbose: show_progressbar(i=i+1, max_i=count, prefix=prefix)
     if verbose: show_progressbar(i=count, max_i=count, prefix=prefix, finish=True)
 
@@ -103,22 +108,18 @@ def n_way_one_shot_learning(clf, count, dataset, n, verbose=False, interpretabil
 
 
 def __remove_interpret_folder():
-    rmtree("./interpretability/")
+    rmtree("./interpretability", ignore_errors=True)
 
 
-def __save_interpret_image(image, iteration, is_correct=None, score=None, is_main=False):
+def __save_interpret_image(image, iteration, name, outside_images=False):
     img = ImageHandler.ensure_1D_image(image)
     size = int(math.sqrt(len(img)))
     img2 = Image.new("1", (size, size))
     img2.putdata(img)
 
-    correct_folder = "correct" if is_correct else "wrong"
-    name = str(round(score, 4))
-    path = "./interpretability/" + str(iteration) + "/" + str(correct_folder)
-    if is_main:
+    path = "./interpretability/" + str(iteration) + "/" + "images"
+    if outside_images:
         path = "./interpretability/" + str(iteration)
-        name = "main_image"
-
     if not os.path.exists(path): os.makedirs(path)
 
     img2.save(path + "/" + name + '.png')
