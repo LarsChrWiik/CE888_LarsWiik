@@ -105,38 +105,6 @@ def crop_image(image, x_min, x_max, y_min, y_max):
     return new_image
 
 
-def __image_2D_to_1D(image):
-    """
-    Convert a 2D list into a 1D list.
-
-    :param image: 2D list.
-    :return: 1D list.
-    """
-    new_image = []
-    for r in image:
-        for c in r:
-            new_image.append(c)
-    return new_image
-
-
-def __image_1D_to_2D(image):
-    """
-    Converts a 1D list to 2D list (squared matrix).
-
-    :param image: 1D list.
-    :return: 2D list.
-    """
-    size = int(math.sqrt(len(image)))
-    new_image = []
-    r = []
-    for i, pixel in enumerate(image):
-        r.append(pixel)
-        if (i + 1) % size == 0:
-            new_image.append(r)
-            r = []
-    return new_image
-
-
 def resize_2D_image(image, size):
     """
     Resize a 2D image to a desired squared size.
@@ -233,3 +201,35 @@ def is_2D_image(image):
     except:
         pass
     return False
+
+
+def __image_2D_to_1D(image):
+    """
+    Convert a 2D list into a 1D list.
+
+    :param image: 2D list.
+    :return: 1D list.
+    """
+    new_image = []
+    for r in image:
+        for c in r:
+            new_image.append(c)
+    return new_image
+
+
+def __image_1D_to_2D(image):
+    """
+    Converts a 1D list to 2D list (squared matrix).
+
+    :param image: 1D list.
+    :return: 2D list.
+    """
+    size = int(math.sqrt(len(image)))
+    new_image = []
+    r = []
+    for i, pixel in enumerate(image):
+        r.append(pixel)
+        if (i + 1) % size == 0:
+            new_image.append(r)
+            r = []
+    return new_image
