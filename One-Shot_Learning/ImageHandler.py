@@ -18,10 +18,8 @@ def image_differences_2D(img1, img2):
     for i, r in enumerate(img1):
         new_row = []
         for j, c in enumerate(r):
-            if c == img2[i][j]:
-                new_row.append(0)
-            else:
-                new_row.append(1)
+            value = abs(img1[i][j] - img2[i][j])
+            new_row.append(value)
         img_diff.append(new_row)
     return img_diff
 
@@ -107,7 +105,7 @@ def crop_image(image, x_min, x_max, y_min, y_max):
     return new_image
 
 
-def image_2D_to_1D(image):
+def __image_2D_to_1D(image):
     """
     Convert a 2D list into a 1D list.
 
@@ -121,7 +119,7 @@ def image_2D_to_1D(image):
     return new_image
 
 
-def image_1D_to_2D(image):
+def __image_1D_to_2D(image):
     """
     Converts a 1D list to 2D list (squared matrix).
 
@@ -147,11 +145,11 @@ def resize_2D_image(image, size):
     :param size: the desired size of the image.
     :return: 2D list representing the resized image).
     """
-    image_flattened = image_2D_to_1D(image)
+    image_flattened = __image_2D_to_1D(image)
     image_zoomed = Image.new(mode="L", size=(int(len(image[0])), int(len(image))))
     image_zoomed.putdata(image_flattened)
     image_scaled = image_zoomed.resize((size, size))
-    return image_1D_to_2D(list(image_scaled.getdata()))
+    return __image_1D_to_2D(list(image_scaled.getdata()))
 
 
 def extract_visual_object_2D(image):
@@ -173,9 +171,21 @@ def extract_visual_object_1D(image):
     :param image: a 1D list representing an image.
     :return: a 1D list representing the object.
     """
-    image_2D = image_1D_to_2D(image)
+    image_2D = __image_1D_to_2D(image)
     image_object = extract_visual_object_2D(image_2D)
-    return image_2D_to_1D(image_object)
+    return __image_2D_to_1D(image_object)
+
+
+def ensure_1D_image(image):
+    """
+    Ensures that an image is 1D.
+
+    :param image: 1D or 2D list representing an image.
+    :return: 1D list representing an image.
+    """
+    if not is_1D_image(image):
+        return __image_2D_to_1D(image)
+    return image
 
 
 def ensure_2D_image(image):
@@ -186,7 +196,7 @@ def ensure_2D_image(image):
     :return: 2D list representing an image.
     """
     if not is_2D_image(image):
-        return image_1D_to_2D(image)
+        return __image_1D_to_2D(image)
     return image
 
 
