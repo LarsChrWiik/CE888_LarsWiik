@@ -1,10 +1,9 @@
 
 from tpot import TPOTRegressor
 from tpot import TPOTClassifier
-import numpy as np
-from PredictionModel import PredictionModel
-
+from PredictionModels.PredictionModelSymmetricXGBoost import PredictionModelSymmetricXGBoost
 import Sampler
+import numpy as np
 
 
 """
@@ -13,7 +12,7 @@ Optimize algorithms and parameters using TPOT for Regression trees.
 def tpot_optimization_reg(count, train_path, test_path, verbose=False):
 
     # Generate samples.
-    formater = PredictionModel()
+    formater = PredictionModelSymmetricXGBoost()
 
     if verbose: print("Get train samples. ")
     X_train, Y_train = Sampler.generate_samples(dataset=train_path, count=count)
@@ -24,25 +23,32 @@ def tpot_optimization_reg(count, train_path, test_path, verbose=False):
 
     tpot_config = {
         'sklearn.ensemble.RandomForestRegressor': {
-            'n_estimators': [10, 25, 50, 75, 100, 300, 1000],
+            'n_estimators': [10, 25, 50, 75, 100, 300],
             'max_features': ["auto", "sqrt", "log2"],
             'max_depth': [2, 3, 4, 5, 6, 8, 10],
             'n_jobs': [-1]
         },
         'sklearn.ensemble.ExtraTreesRegressor': {
-            'n_estimators': [10, 25, 50, 75, 100, 300, 1000],
+            'n_estimators': [10, 25, 50, 75, 100, 300],
             'max_features': ["auto", "sqrt", "log2"],
             'max_depth': [2, 3, 4, 5, 6, 8, 10],
             'n_jobs': [-1]
         },
         'sklearn.ensemble.GradientBoostingRegressor': {
-            'n_estimators': [10, 25, 50, 75, 100, 300, 1000],
+            'n_estimators': [10, 25, 50, 75, 100, 300],
             "learning_rate": [0.02, 0.05, 0.1, 0.15, 0.2],
             'loss': ["ls", "lad", "huber", "quantile"],
             'max_depth': [2, 3, 4, 5, 6, 8, 10]
         },
+        'sklearn.ensemble.AdaBoostRegressor': {
+            'base_estimator': ["DecisionTreeRegressor, GradientBoostingRegressor, RandomForestRegressor"],
+            'n_estimators': [10, 25, 50, 75, 100, 300],
+            "learning_rate": [0.6, 0.7, 0.8, 0.9, 1.0],
+            'loss': ["linear", "square", "exponential"],
+            'max_depth': [2, 3, 4, 5, 6, 8, 10]
+        },
         'xgboost.XGBRegressor': {
-            'n_estimators': [10, 25, 50, 75, 100, 300, 1000],
+            'n_estimators': [10, 25, 50, 75, 100, 300],
             'booster': ["gbtree", "gblinear", "dart"],
             "learning_rate": [0.02, 0.05, 0.1, 0.15, 0.2],
             'max_depth': [2, 3, 4, 5, 6, 8, 10],
@@ -52,7 +58,7 @@ def tpot_optimization_reg(count, train_path, test_path, verbose=False):
     }
 
     tpot = TPOTRegressor(
-        generations=5,
+        generations=10,
         population_size=30,
         verbosity=2,
         config_dict=tpot_config,
