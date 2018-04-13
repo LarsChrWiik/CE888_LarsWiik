@@ -80,7 +80,7 @@ def n_way_one_shot_learning(clf, count, dataset, n, verbose=False, interpretabil
 
     correct_count = 0
     for i in range(count):
-        image_main, X, Y = Sampler.n_way_one_shot_learning(dataset=dataset, n=n)
+        image_main, X, Y, alphabet = Sampler.n_way_one_shot_learning(dataset=dataset, n=n)
         prediction = predict(clf=clf, image_main=image_main, X=X)
         prediction_single = transform_to_signle_prediction(prediction)
 
@@ -91,6 +91,7 @@ def n_way_one_shot_learning(clf, count, dataset, n, verbose=False, interpretabil
             prediction_single=prediction_single,
             X=X, Y=Y, i=i,
             correct_count=correct_count,
+            alphabet=alphabet,
             interpretability=interpretability
         )
 
@@ -109,6 +110,7 @@ def __save_image_interpretability(
         Y,
         i,
         correct_count,
+        alphabet,
         interpretability
 ):
     """
@@ -121,6 +123,7 @@ def __save_image_interpretability(
     :param Y: list of targets.
     :param i: int, iteration number.
     :param correct_count: int, count of number of correct classifications.
+    :param alphabet: string, name of the alphabet
     :param interpretability: bool indicating if interpretability should be considered.
     :return:
     """
@@ -130,11 +133,11 @@ def __save_image_interpretability(
         correct_or_wrong = "correct" if prediction_single == Y else "wrong"
         folder_name = str(i + 1) + "_" + correct_or_wrong
         for j, image in enumerate(X):
-            target_name = "_target" if j == get_index_of_min_value(Y) else ""
+            target_name = "__target" if j == get_index_of_min_value(Y) else ""
             __save_interpret_image(
                 image=image,
                 folder_name=folder_name,
-                name=str(round(prediction[j], 4)) + "_" + str(j) + target_name
+                name=str("%.3f" % prediction[j]) + "__score" + str(j) + target_name
             )
         __save_interpret_image(
             image=image_main,
@@ -148,7 +151,12 @@ def __save_image_interpretability(
             name=str(round(prediction[get_index_of_min_value(prediction)], 4)),
             outside_images=True
         )
+        __save_interpret_alphabet(folder_name=folder_name, alphabet=alphabet)
 
+
+def __save_interpret_alphabet(folder_name, alphabet):
+    with open("./interpretability/" + folder_name + "/alphabet.txt", "w") as text_file:
+        text_file.write(alphabet)
 
 def __remove_interpret_folder():
     rmtree("./interpretability", ignore_errors=True)
