@@ -1,5 +1,5 @@
 
-from PredictionModel import PredictionModel
+from PredictionModels.PredictionModelSymmetricXGBoost import PredictionModelSymmetricXGBoost
 import Sampler
 import Dataset
 import pickle
@@ -54,7 +54,7 @@ def load_model(count, verbose=False):
     # Load the model from disk.
     path = get_model_string(count=count)
     loaded_model = pickle.load(open(path, 'rb'))
-    clf = PredictionModel()
+    clf = PredictionModelSymmetricXGBoost()
     clf.set_model(loaded_model)
     if verbose: print("Model loaded: " + path)
     return clf
@@ -67,5 +67,5 @@ def train_save_new_model(count, verbose=False):
     :param count: int representing training count.
     :param verbose: bool representing whether information should be shown.
     """
-    clf = PredictionModel()
+    clf = PredictionModelSymmetricXGBoost()
     train_save_model(clf=clf, count=count, verbose=verbose)
