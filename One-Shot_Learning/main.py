@@ -1,8 +1,9 @@
 
 from TpotOptimization import tpot_optimization_reg
 from NWayOneShotLearning import n_way_one_shot_learning
-from PredictionModel import PredictionModel
-import Sampler
+from PredictionModels.PredictionModelSymmetricXGBoost import PredictionModelSymmetricXGBoost
+from PredictionModels.PredictionModelHausdorff import PredictionModelHausdorff
+from PredictionModels.PredictionModelBaseline import PredictionModelBaseline
 import ModelHandler
 import KFold_CV
 import Dataset
@@ -69,10 +70,11 @@ def pickle_models():
 def main():
     #start_tpot_optimazation(count=10000)
 
-    clf = ModelHandler.train_model(clf=PredictionModel(), count=10000, verbose=True)
-    start_20_way_one_shot(clf=clf, count=400, interpretability=True)
+    clf = ModelHandler.train_model(clf=PredictionModelSymmetricXGBoost(), count=100, verbose=True)
+    start_20_way_one_shot(clf=clf, count=400)
 
-    #start_cross_validation(clf=PredictionModel(), count=10000, k_fold=5)
+    #start_cross_validation(clf=PredictionModel(), count=1000, k_fold=5)
+
 
 
 if __name__ == "__main__":
