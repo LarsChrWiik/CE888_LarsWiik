@@ -3,6 +3,7 @@ from sklearn.model_selection import KFold
 #from sklearn.model_selection import cross_val_score
 import Sampler
 import numpy as np
+from NWayOneShotLearning import transform_to_signle_prediction
 
 
 def kfold_cv(clf, X, Y, k_fold=5, verbose=False):
@@ -84,7 +85,14 @@ def __cv_fit_predict(clf, X_train, Y_train, X_test, Y_test, verbose=False):
     clf.fit(X_train, Y_train)
     if verbose: print("Predict")
     predictions = clf.predict(X_test)
-    predictions = np.around(predictions)
+
+    # Normalize predictions.
+    min_value = min(predictions)
+    max_value = max(predictions)
+    predictions = [(pred - min_value) / (max_value - min_value) for pred in predictions]
+
+    # Predict either 0 or 1 according to threshold.
+    predictions = [0 if x < 0.5 else 1 for x in predictions]
 
     # Calculate score.
     score = len([x for i, x in enumerate(predictions) if x == Y_test[i]]) / len(predictions)
