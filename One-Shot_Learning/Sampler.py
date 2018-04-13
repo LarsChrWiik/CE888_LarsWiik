@@ -82,17 +82,22 @@ def n_way_one_shot_learning(dataset, n=20):
     # Initialize the samples X with according targets Y.
     X = [image_similar]
     Y = [0]
+    added_chars = [character2]
 
     # Add n-1 images of other characters.
-    for i in range(n-1):
+    while len(X) < n:
         c, v = __pick_other_character(dataset, alphabet, character, version, same_character=False)
         image_non_similar = load_image(path=PATH.get_path(dataset, alphabet, c, v))
-        X.append(image_non_similar)
-        Y.append(1)
+        if c in added_chars:
+            continue
+        else:
+            X.append(image_non_similar)
+            Y.append(1)
+            added_chars.append(c)
 
     X, Y = __shuffle_two_lists(X, Y)
 
-    return image_main, X, Y
+    return image_main, X, Y, alphabet
 
 
 """
