@@ -41,7 +41,6 @@ def start_20_way_one_shot(clf, count, interpretability=False):
     print("Score =", score)
 
 
-
 def start_cross_validation(clf, count, k_fold):
     """
     Run 5-fold cross validation on a given classifier.
