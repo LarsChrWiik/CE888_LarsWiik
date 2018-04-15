@@ -155,14 +155,32 @@ def __save_image_interpretability(
 
 
 def __save_interpret_alphabet(folder_name, alphabet):
+    """
+    Save alphabet name to txt file.
+
+    :param folder_name: string, name of the iteration folder.
+    :param alphabet: string, name of the alphabet.
+    """
     with open("./interpretability/" + folder_name + "/alphabet.txt", "w") as text_file:
         text_file.write(alphabet)
 
+
 def __remove_interpret_folder():
+    """
+    Remove old interpretability files.
+    """
     rmtree("./interpretability", ignore_errors=True)
 
 
 def __save_interpret_image(image, folder_name, name, outside_images=False):
+    """
+    Save image to disk for interpretability reasons.
+
+    :param image: list, image to be saved.
+    :param folder_name: string, name of the iteration folder.
+    :param name: string, name of the file.
+    :param outside_images: bool, representing if the file should be stored outside the image folder.
+    """
     img = ImageHandler.ensure_1D_image(image)
     size = int(math.sqrt(len(img)))
     img2 = Image.new("1", (size, size))
