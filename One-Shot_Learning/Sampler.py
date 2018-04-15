@@ -12,7 +12,7 @@ def load_image(path, compress=True, compression_size=28):
     :param path: string
     :param compress: bool representing whether compression should be done.
     :param compression_size: int representing compression size for a squared image.
-    :return:
+    :return: 1D list representing an image.
     """
     if compress:
         return ImageHandler.load_image_compressed(path=path, size=compression_size)
@@ -41,8 +41,8 @@ def generate_samples(dataset, count):
     """
     Generate a desired count of samples. The ratio between targets is balanced.
 
-    :param dataset:
-    :param count:
+    :param dataset: string, name of the dataset. 
+    :param count: int, number of samples to be generated.
     :return: 2-tuple containing one list of 1D lists of samples X and a 1D list of targets Y.
        (X, Y)
     """
