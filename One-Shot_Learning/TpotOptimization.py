@@ -6,10 +6,15 @@ import Sampler
 import numpy as np
 
 
-"""
-Optimize algorithms and parameters using TPOT for Regression trees. 
-"""
 def tpot_optimization_reg(count, train_path, test_path, verbose=False):
+    """
+    Optimize algorithms and parameters using TPOT for Regression trees.
+
+    :param count: int, number of samples to be generated.
+    :param train_path: string, path to the dataset used for training.
+    :param test_path: string, path to the dataset used for testing.
+    :param verbose: bool, representing if information regarding the process should be displayed.
+    """
 
     # Generate samples.
     formater = PredictionModelSymmetricXGBoost()
@@ -70,11 +75,16 @@ def tpot_optimization_reg(count, train_path, test_path, verbose=False):
     tpot.export('tpot_pipeline_reg.py')
 
 
-
-"""
-Optimize algorithms and parameters using TPOT for Classification trees. 
-"""
 def tpot_optimization_clf(count, train_path, test_path, verbose=False):
+    """
+    Optimize algorithms and parameters using TPOT for Classification trees.
+
+    :param count: int, number of samples to be generated.
+    :param train_path: string, path to the dataset used for training.
+    :param test_path: string, path to the dataset used for testing.
+    :param verbose: bool, representing if information regarding the process should be displayed.
+    """
+
     # Generate samples.
     if verbose: print("Get train samples. ")
     X_train, Y_train = Sampler.generate_samples(dataset=train_path, count=count)
@@ -103,8 +113,8 @@ def tpot_optimization_clf(count, train_path, test_path, verbose=False):
     if verbose: print("Start TPOT optimization. ")
 
     tpot = TPOTClassifier(
-        generations=5,
-        population_size=15,
+        generations=10,
+        population_size=30,
         verbosity=2,
         config_dict=tpot_config
     )
