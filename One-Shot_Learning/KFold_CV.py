@@ -33,7 +33,6 @@ def kfold_cv(clf, X, Y, k_fold=5, verbose=False):
     return cv_scores
 
 
-
 def kfold_cv_unique_datasets(clf, train_path, test_path, count=100, k_fold=5, verbose=False):
     """
     Custom K-Fold validation using different datasets.
