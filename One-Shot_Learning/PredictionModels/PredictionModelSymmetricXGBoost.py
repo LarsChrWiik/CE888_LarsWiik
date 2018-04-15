@@ -88,9 +88,9 @@ class PredictionModelSymmetricXGBoost:
         Format inputs by cropping the image and scaling the object.
         This also generate symmetrical sample combination.
 
-        :param X:
-        :param Y:
-        :return:
+        :param X: list of image pars.
+        :param Y: list of targets.
+        :return: tuple (list, list)
         """
         new_samples = []
         for i, x in enumerate(X):
