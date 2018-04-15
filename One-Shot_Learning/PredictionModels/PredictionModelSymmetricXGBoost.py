@@ -10,7 +10,6 @@ class PredictionModelSymmetricXGBoost:
     Class containing the logic for the predictive model.
     """
 
-
     # -0.15169617230917484 (My test)
     # -0.13400621878282912 (Tpot test)
     clf = XGBRegressor(
@@ -21,7 +20,6 @@ class PredictionModelSymmetricXGBoost:
         n_jobs=-1,
         objective="reg:linear"
     )
-
 
     def fit(self, X, Y):
         """
@@ -34,7 +32,6 @@ class PredictionModelSymmetricXGBoost:
         X, Y = self._format_fit_inputs(X, Y)
         self.clf.fit(np.array(X), np.array(Y))
 
-
     def predict(self, X):
         """
         Make prediction using the classifier.
@@ -44,7 +41,6 @@ class PredictionModelSymmetricXGBoost:
         """
         self.__assert_input(X)
         return self.predict_symmetric(X)
-
 
     def predict_symmetric(self, X):
         """
@@ -59,7 +55,6 @@ class PredictionModelSymmetricXGBoost:
             predictions.append(pred)
         return predictions
 
-
     def get_model(self):
         """
         Return the prediction model.
@@ -67,7 +62,6 @@ class PredictionModelSymmetricXGBoost:
         :return: classifier.
         """
         return self.clf
-
 
     def set_model(self, clf):
         """
@@ -77,11 +71,9 @@ class PredictionModelSymmetricXGBoost:
         """
         self.clf = clf
 
-
     """
                     PROTECTED FUNCTIONS
     """
-
 
     def _format_fit_inputs(self, X, Y):
         """
@@ -106,11 +98,9 @@ class PredictionModelSymmetricXGBoost:
         Y = self.__column(new_samples, 1)
         return X, Y
 
-
     """
                      PRIVATE FUNCTIONS
     """
-
 
     def __format_image(self, image):
         """
@@ -122,7 +112,6 @@ class PredictionModelSymmetricXGBoost:
         img_cropped = self.__object_cropp_scale(image)
         img_conv = self.__image_convolution(img_cropped)
         return ImageHandler.ensure_1D_image(img_conv)
-
 
     def __image_convolution(self, image):
         """
@@ -138,7 +127,6 @@ class PredictionModelSymmetricXGBoost:
             [1, 2, 1]
         ]
         return self.__custom_image_convolution(image=image, kernel=kernel, division=16)
-
 
     def __custom_image_convolution(self, image, kernel, division=1):
         """
@@ -164,7 +152,6 @@ class PredictionModelSymmetricXGBoost:
             image_conv.append(image_conv_row)
         return image_conv
 
-
     def __predict_sample(self, X):
         """
         Make single prediction using the classifier.
@@ -177,7 +164,6 @@ class PredictionModelSymmetricXGBoost:
         pred2 = self.clf.predict([X[1]])[0]
         return (pred1 + pred2) / 2.0
 
-
     def __assert_input(self, X):
         """
         Assert the input type. This ensures ease of use and testing.
@@ -189,7 +175,6 @@ class PredictionModelSymmetricXGBoost:
         except:
             sys.exit("PredictionModel: Fit require inputs with two images.")
 
-
     def __object_cropp_scale(self, image1):
         """
         Merge two samples by calculating the differences between two samples.
@@ -200,7 +185,6 @@ class PredictionModelSymmetricXGBoost:
         image1_2D_raw = ImageHandler.ensure_2D_image(image1)
         image1_2D = ImageHandler.extract_visual_object_2D(image1_2D_raw)
         return ImageHandler.ensure_1D_image(image1_2D)
-
 
     def __symmetrical_samples(self, image1, image2, Y):
         """
@@ -219,7 +203,6 @@ class PredictionModelSymmetricXGBoost:
         samples.append(sample)
         samples.append(sample2)
         return samples
-
 
     def __column(self, matrix, i):
         """

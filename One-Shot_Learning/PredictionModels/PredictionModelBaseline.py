@@ -31,7 +31,6 @@ class PredictionModelBaseline(PredictionModel):
         X = self.__format_X(X)
         return self.clf.predict(X)
 
-
     def __format_X(self, X):
         """
         Format inputs by cropping the image and scaling the object.

@@ -13,9 +13,8 @@ class PredictionModelHausdorff(PredictionModel):
         """
         No fitting is needed for this prediction model.
 
-        :param X:
-        :param Y:
-        :return:
+        :param X: list of image pars.
+        :param Y: list of targets.
         """
         pass
 

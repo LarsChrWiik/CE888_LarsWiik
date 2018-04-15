@@ -27,7 +27,6 @@ class PredictionModelKnn(PredictionModelSymmetricXGBoost):
 
     clf2 = KNeighborsClassifier(n_neighbors=1, metric=custom_distance)
 
-
     def fit(self, X, Y):
         """
         Train the classifier.
@@ -38,7 +37,6 @@ class PredictionModelKnn(PredictionModelSymmetricXGBoost):
         X, Y = self._format_fit_inputs(X, Y)
         self.clf.fit(X[:int(len(X) / 2)], Y[:int(len(Y) / 2)])
         self.clf2.fit(X[-int(len(X) / 2):], Y[-int(len(Y) / 2):])
-
 
     def predict(self, X):
         """
