@@ -68,9 +68,14 @@ def pickle_models():
 
 
 def main():
+    """
+    Main function.
+    """
     #start_tpot_optimazation(count=10000)
 
-    clf = ModelHandler.train_model(clf=PredictionModelSymmetricXGBoost(), count=100, verbose=True)
+    clf = PredictionModelSymmetricXGBoost()
+
+    clf = ModelHandler.train_model(clf=clf, count=10000, verbose=True)
     start_20_way_one_shot(clf=clf, count=400)
 
     #start_cross_validation(clf=PredictionModel(), count=1000, k_fold=5)
